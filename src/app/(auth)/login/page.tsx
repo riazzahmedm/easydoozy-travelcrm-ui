@@ -10,9 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function LoginPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<LoginFormValues>({
@@ -24,6 +26,10 @@ export default function LoginPage() {
       setError(null);
 
       await login(data); // cookie is set by backend
+
+      await queryClient.invalidateQueries({
+        queryKey: ["me"],
+      });
 
       const me = await getMe();
 

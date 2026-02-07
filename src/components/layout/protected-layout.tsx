@@ -17,20 +17,22 @@ export function ProtectedLayout({
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (isLoading) return;
+
+   if (!user) {
       router.replace("/login");
+      return;
     }
 
     if (
-      user &&
       allowedRoles &&
       !allowedRoles.includes(user.role)
     ) {
       router.replace("/login");
     }
-  }, [user, isLoading, isAuthenticated, allowedRoles, router]);
+  }, [user, isLoading, allowedRoles, router]);
 
-  if (isLoading || !isAuthenticated) {
+  if (isLoading || !user) {
     return (
       <div className="flex h-screen items-center justify-center">
         Loading...
