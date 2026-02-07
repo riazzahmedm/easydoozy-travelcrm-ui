@@ -1,4 +1,5 @@
 import { ProtectedLayout } from "@/components/layout/protected-layout";
+import { AppShell } from "@/components/layout/app-shell";
 
 export default function PlatformLayout({
   children,
@@ -7,7 +8,7 @@ export default function PlatformLayout({
 }) {
   return (
     <ProtectedLayout allowedRoles={["SUPER_ADMIN"]}>
-      {children}
+      <AppShell>{children}</AppShell>
     </ProtectedLayout>
   );
 }
