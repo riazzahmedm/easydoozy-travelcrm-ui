@@ -1,14 +1,21 @@
-import { ProtectedLayout } from "@/components/layout/protected-layout";
 import { AppShell } from "@/components/layout/app-shell";
+import { redirect } from "next/navigation";
+import { getServerUser } from "@/lib/server-auth";
 
-export default function TenantLayout({
+export default async function TenantLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <ProtectedLayout allowedRoles={["TENANT_ADMIN", "AGENT"]}>
-      <AppShell>{children}</AppShell>
-    </ProtectedLayout>
-  );
+  const user = await getServerUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  if (user.role !== "TENANT_ADMIN" && user.role !== "AGENT") {
+    redirect("/login");
+  }
+
+  return <AppShell user={user}>{children}</AppShell>;
 }

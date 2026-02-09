@@ -10,9 +10,15 @@ export function useAuth() {
     refetchOnMount: "always",
   });
 
+  const user = query.data;
+  const tenant = user?.tenant;
+  const subscription = tenant?.subscription;
+
   return {
-    user: query.data,
+    user,
+    tenant,
+    subscription,
     isLoading: query.isLoading,
-    isAuthenticated: !!query.data,
+    isAuthenticated: !!user,
   };
 }

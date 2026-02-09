@@ -1,7 +1,8 @@
 export type UserRole = "SUPER_ADMIN" | "TENANT_ADMIN" | "AGENT";
 
 export interface AuthUser {
-  id: string;
+  userId: string;
   role: UserRole;
   tenantId: string;
+  email?: string;
 }

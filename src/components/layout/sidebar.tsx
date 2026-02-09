@@ -3,15 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAVIGATION } from "@/lib/navigation";
-import { useAuth } from "@/hooks/useAuth";
 import clsx from "clsx";
+import { AuthUser } from "@/lib/auth";
 
-export function Sidebar() {
+export function Sidebar({ user }: { user: AuthUser }) {
   const pathname = usePathname();
-  const { user } = useAuth();
-
-  if (!user) return null;
-
   const items = NAVIGATION[user.role];
 
   return (
@@ -20,6 +16,7 @@ export function Sidebar() {
         Travel CRM
       </div>
 
+      {/* Navigation */}
       <nav className="flex-1 px-4 py-4 space-y-1">
         {items.map((item) => (
           <Link
