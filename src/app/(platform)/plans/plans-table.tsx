@@ -37,7 +37,7 @@ export function PlansTable() {
             <th className="p-3 text-left">Packages</th>
             <th className="p-3 text-left">Agents</th>
             <th className="p-3 text-left">Status</th>
-            <th className="p-3 text-right">Actions</th>
+            <th className="p-4 text-right">Actions</th>
           </tr>
         </thead>
 

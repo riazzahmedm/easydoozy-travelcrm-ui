@@ -1,12 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { togglePlanStatus } from "@/lib/plans-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
+import { Pencil } from "lucide-react";
 
 export function PlanActions({ plan }: { plan: any }) {
   const queryClient = useQueryClient();
@@ -24,24 +24,22 @@ export function PlanActions({ plan }: { plan: any }) {
   return (
     <div className="flex justify-end gap-4 items-center">
       {/* Edit */}
-      <Button
-        variant="outline"
-        size="sm"
+      <button
+        type="button"
         onClick={() => {
           setIsNavigating(true);
           router.push(`/plans/${plan.id}`);
         }}
         disabled={isNavigating}
+        className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white p-2 text-slate-600 shadow-sm transition hover:border-slate-300 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+        aria-label="Edit plan"
       >
         {isNavigating ? (
-          <>
-            <Spinner className="text-white" size={14} />
-            Loading...
-          </>
+          <Spinner className="text-slate-600" size={14} />
         ) : (
-          "Edit"
+          <Pencil className="h-4 w-4" />
         )}
-      </Button>
+      </button>
 
       {/* Active / Inactive */}
       <div className="flex items-center gap-2">
