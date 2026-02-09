@@ -30,7 +30,7 @@ export function PlansTable() {
   return (
     <div className="bg-white rounded border overflow-hidden">
       <table className="w-full text-sm">
-        <thead className="bg-muted">
+        <thead>
           <tr>
             <th className="p-3 text-left">Plan</th>
             <th className="p-3 text-left">Destinations</th>

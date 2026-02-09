@@ -1,4 +1,5 @@
 import { PlansTable } from "./plans-table";
+import { CreatePlanButton } from "./create-plan-button";
 
 export default function PlansPage() {
   return (
@@ -11,12 +12,7 @@ export default function PlansPage() {
           </p>
         </div>
 
-        <a
-          href="/plans/new"
-          className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm"
-        >
-          Create Plan
-        </a>
+        <CreatePlanButton />
       </div>
 
       <PlansTable />

@@ -1,19 +1,26 @@
-import { getPlanById } from "@/lib/plans-api";
+import { notFound, redirect } from "next/navigation";
+import { getServerPlanById } from "@/lib/server-plans-api";
 import { PlanForm } from "../plan-form";
 
-export default async function EditPlanPage({
-  params,
-}: {
-  params: { id: string };
+export default async function EditPlanPage(props: {
+  params: Promise<{ id: string }>;
 }) {
-  const plan = await getPlanById(params.id);
+  const { id } = await props.params;
+
+  const result = await getServerPlanById(id);
+
+  if (result.status === 401 || result.status === 403) {
+    redirect("/login");
+  }
+
+  if (!result.plan) {
+    notFound();
+  }
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">
-        Edit Plan
-      </h1>
-      <PlanForm initialData={plan} />
+      <h1 className="text-2xl font-semibold">Edit Plan</h1>
+      <PlanForm initialData={result.plan} />
     </div>
   );
 }

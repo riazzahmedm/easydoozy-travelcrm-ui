@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPlan, updatePlan } from "@/lib/plans-api";
+import { useToast } from "@/components/ui/toast";
 
 type PlanFormValues = {
   name: string;
@@ -27,6 +28,7 @@ export function PlanForm({
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { push } = useToast();
 
   const form = useForm<PlanFormValues>({
     defaultValues: initialData ?? {
@@ -45,16 +47,32 @@ export function PlanForm({
   const mutation = useMutation({
     mutationFn: (values: PlanFormValues) =>
       initialData
-        ? updatePlan(initialData.id, values)
+        ? updatePlan(initialData.id, {
+            name: values.name,
+            limits: values.limits,
+            isActive: values.isActive,
+          })
         : createPlan(values),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["plans"] });
-      router.push("/plans");
-    },
   });
 
-  const onSubmit = (values: PlanFormValues) => {
-    mutation.mutate(values);
+  const onSubmit = async (values: PlanFormValues) => {
+    try {
+      await mutation.mutateAsync(values);
+      await queryClient.invalidateQueries({ queryKey: ["plans"] });
+      push({
+        variant: "success",
+        title: initialData ? "Plan updated" : "Plan created",
+      });
+      router.push("/plans");
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.message || "Something went wrong";
+      push({
+        variant: "error",
+        title: "Save failed",
+        description: message,
+      });
+    }
   };
 
   return (
@@ -122,13 +140,12 @@ export function PlanForm({
             Allow image uploads
           </div>
         </div>
-        <Switch {...form.register("limits.mediaEnabled")} />
-      </div>
-
-      {/* Active */}
-      <div className="flex items-center justify-between">
-        <label className="text-sm font-medium">Active</label>
-        <Switch {...form.register("isActive")} />
+        <Switch
+          checked={form.watch("limits.mediaEnabled")}
+          onCheckedChange={(value) =>
+            form.setValue("limits.mediaEnabled", value)
+          }
+        />
       </div>
 
       {/* Actions */}

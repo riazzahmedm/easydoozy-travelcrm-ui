@@ -1,21 +1,8 @@
-import { cookies } from "next/headers";
 import { ServerUser } from "./types";
-
-const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+import { serverFetch } from "./server-api";
 
 export async function getServerUser(): Promise<ServerUser | null> {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
-
-  if (!accessToken) return null;
-
-  const res = await fetch(`${apiBaseUrl}/auth/me`, {
-    headers: {
-      cookie: `access_token=${accessToken}`,
-    },
-    cache: "no-store",
-  });
+  const res = await serverFetch("/auth/me");
 
   if (!res.ok) return null;
   return res.json();

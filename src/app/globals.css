@@ -1,10 +1,29 @@
 @import "tailwindcss";
 
-html,
-body {
-  height: 100%;
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+  --color-input: #e2e8f0;
+  --color-border: #e2e8f0;
+  --color-ring: #94a3b8;
+  --color-primary: #0f172a;
+  --color-primary-foreground: #f8fafc;
 }
 
-body {
-  margin: 0;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    @apply bg-background text-foreground;
+  }
 }

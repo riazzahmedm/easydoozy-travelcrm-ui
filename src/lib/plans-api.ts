@@ -24,7 +24,7 @@ export async function togglePlanStatus(
   planId: string,
   isActive: boolean
 ) {
-  const res = await api.patch(`/plans/${planId}/status`, {
+  const res = await api.patch(`/plans/${planId}`, {
     isActive,
   });
   return res.data;
