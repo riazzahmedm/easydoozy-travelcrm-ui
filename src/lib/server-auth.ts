@@ -1,9 +1,10 @@
 import { cookies } from "next/headers";
+import { ServerUser } from "./types";
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
-export async function getServerUser() {
+export async function getServerUser(): Promise<ServerUser | null> {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
 
