@@ -17,6 +17,7 @@ export const NAVIGATION: Record<UserRole, NavItem[]> = {
     { label: "Destinations", href: "/destinations" },
     { label: "Packages", href: "/packages" },
     { label: "Subscription", href: "/subscription" },
+    { label: "Tags", href: "/tags" },
   ],
   AGENT: [
     { label: "Dashboard", href: "/dashboard" },

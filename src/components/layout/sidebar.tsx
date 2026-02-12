@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   MapPin,
   Package,
+  Tags,
   UserRound,
 } from "lucide-react";
 
@@ -27,6 +28,7 @@ export function Sidebar({ user }: { user: AuthUser }) {
     "/destinations": MapPin,
     "/packages": Package,
     "/subscription": CreditCard,
+    "/tags": Tags
   };
 
   return (
