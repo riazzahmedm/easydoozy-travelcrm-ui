@@ -43,9 +43,9 @@ export function PlanActions({ plan }: { plan: any }) {
 
       {/* Active / Inactive */}
       <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">
+        {/* <span className="text-sm text-muted-foreground">
           {plan.isActive ? "Active" : "Inactive"}
-        </span>
+        </span> */}
         <Switch
           checked={plan.isActive}
           onCheckedChange={() => mutation.mutate()}

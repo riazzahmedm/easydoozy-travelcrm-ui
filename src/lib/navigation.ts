@@ -9,7 +9,7 @@ export const NAVIGATION: Record<UserRole, NavItem[]> = {
   SUPER_ADMIN: [
     { label: "Plans", href: "/plans" },
     { label: "Tenants", href: "/tenants" },
-    { label: "Subscriptions", href: "/subscriptions" },
+    // { label: "Subscriptions", href: "/subscriptions" },
   ],
   TENANT_ADMIN: [
     { label: "Dashboard", href: "/dashboard" },

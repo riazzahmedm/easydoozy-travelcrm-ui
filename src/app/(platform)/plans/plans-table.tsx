@@ -11,6 +11,8 @@ export function PlansTable() {
     queryFn: getPlans,
   });
 
+  console.log(data);
+  
   if (isLoading) {
     return (
       <div className="bg-white rounded border p-6">
