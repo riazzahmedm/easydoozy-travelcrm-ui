@@ -45,9 +45,9 @@ export default function LoginPage() {
 
       // 🔁 Redirect by role
       if (me.role === "SUPER_ADMIN") {
-        router.push("/plans");
+        router.push("/platform-dashboard");
       } else {
-        router.push("/dashboard");
+        router.push("/tenant-dashboard");
       }
     } catch (err: any) {
       const message =
