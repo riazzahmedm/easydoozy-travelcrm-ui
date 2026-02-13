@@ -74,12 +74,12 @@ export function DestinationForm({
 
       if (isEdit) {
         return updateDestination(
-          initialData.id,
+          initialData?.id,
           payload
         );
       }
 
-      return createDestination({ ...payload, slug: form.slug});
+      return createDestination({ ...payload, slug: form.slug });
     },
     onSuccess: () => {
       push({
@@ -129,6 +129,7 @@ export function DestinationForm({
         <Input
           placeholder="Slug"
           value={form.slug}
+          disabled={isEdit}
           onChange={(e) =>
             setForm({
               ...form,
@@ -273,14 +274,18 @@ export function DestinationForm({
 
         <Input
           placeholder="https://image1.jpg, https://image2.jpg"
+          value={form.galleryUrls?.join(", ") ?? ""}
           onChange={(e) =>
             setForm({
               ...form,
-              galleryUrls:
-                e.target.value.split(","),
+              galleryUrls: e.target.value
+                .split(",")
+                .map((u) => u.trim())
+                .filter(Boolean),
             })
           }
         />
+
 
         <div className="flex gap-2 mt-3 flex-wrap">
           {form.galleryUrls?.map(

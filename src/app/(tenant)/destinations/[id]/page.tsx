@@ -7,9 +7,7 @@ export default async function EditDestinationPage({
 }: {
   params: { id: string };
 }) {
-
-   const { id } = await params;
-
+  const { id } = await params;
   const destination =
     await getServerDestinationById(id);
 
