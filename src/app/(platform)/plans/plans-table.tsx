@@ -2,8 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getPlans } from "@/lib/plans-api";
-import { PlanStatus } from "./plan-status";
 import { PlanActions } from "./plan-actions";
+import { Badge } from "@/components/ui/badge";
 
 export function PlansTable() {
   const { data, isLoading } = useQuery({
@@ -49,7 +49,15 @@ export function PlansTable() {
               <td className="p-3">{plan.limits?.maxPackages}</td>
               <td className="p-3">{plan.limits?.maxAgents}</td>
               <td className="p-3">
-                <PlanStatus isActive={plan.isActive} />
+                <Badge
+                  className={
+                    plan.isActive
+                      ? "bg-green-100 text-green-700"
+                      : "bg-gray-100 text-gray-600"
+                  }
+                >
+                  {plan.isActive ? "Active" : "Inactive"}
+                </Badge>
               </td>
               <td className="p-3 text-right">
                 <PlanActions plan={plan} />
