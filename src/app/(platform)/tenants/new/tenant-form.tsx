@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plan } from "@/types/api";
+import Image from "next/image";
 
 export function CreateTenantForm() {
   const router = useRouter();
@@ -126,9 +127,13 @@ export function CreateTenantForm() {
               }
             />
             {form.logo && (
-              <img
+              <Image
                 src={form.logo}
-                className="h-14 mt-2 rounded border p-2 object-contain bg-white"
+                alt="Tenant logo preview"
+                width={56}
+                height={56}
+                unoptimized
+                className="h-14 w-14 mt-2 rounded border p-2 object-contain bg-white"
               />
             )}
           </div>

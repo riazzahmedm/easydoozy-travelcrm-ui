@@ -7,6 +7,7 @@ import { updateTenantStatus } from "@/lib/tenants-api";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
 import { TenantDetails } from "@/types/api";
+import Image from "next/image";
 
 export function TenantOverview({ tenant }: { tenant: TenantDetails }) {
   const queryClient = useQueryClient();
@@ -51,9 +52,12 @@ export function TenantOverview({ tenant }: { tenant: TenantDetails }) {
       <div className="flex items-start gap-4">
         <div className="h-14 w-14 rounded-xl overflow-hidden border bg-slate-100 flex items-center justify-center">
           {tenant.logo ? (
-            <img
+            <Image
               src={tenant.logo}
               alt={`${tenant.name} logo`}
+              width={56}
+              height={56}
+              unoptimized
               className="h-full w-full object-cover"
             />
           ) : (
