@@ -48,10 +48,10 @@ export function PlanForm({
     mutationFn: (values: PlanFormValues) =>
       initialData
         ? updatePlan(initialData.id, {
-            name: values.name,
-            limits: values.limits,
-            isActive: values.isActive,
-          })
+          name: values.name,
+          limits: values.limits,
+          isActive: values.isActive,
+        })
         : createPlan(values),
   });
 
@@ -78,90 +78,132 @@ export function PlanForm({
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit)}
-      className="space-y-6 bg-white p-6 rounded border max-w-xl"
+      className="max-w-2xl rounded-2xl border bg-white p-10 shadow-sm space-y-8"
     >
-      {/* Name */}
-      <div>
-        <label className="text-sm font-medium">Plan Name</label>
-        <Input {...form.register("name", { required: true })} />
-      </div>
-
-      {/* Code (create only) */}
-      {!initialData && (
-        <div>
-          <label className="text-sm font-medium">Plan Code</label>
+      {/* BASIC INFO */}
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">
+            Plan Name <span className="text-red-500">*</span>
+          </label>
           <Input
+            className="h-11 rounded-lg"
+            {...form.register("name", { required: true })}
+            placeholder="Starter Plan"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">
+            Plan Code <span className="text-red-500">*</span>
+          </label>
+          <Input
+            className="h-11 rounded-lg uppercase tracking-wide"
             {...form.register("code", { required: true })}
             placeholder="STARTER"
+            disabled={initialData}
           />
+          <p className="text-xs text-muted-foreground">
+            Unique identifier (cannot be changed later)
+          </p>
         </div>
-      )}
+      </div>
 
-      {/* Limits */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm">Max Agents</label>
-          <Input
-            type="number"
-            {...form.register("limits.maxAgents", {
-              valueAsNumber: true,
-            })}
-          />
+      {/* USAGE LIMITS */}
+      <div className="space-y-6 border-t pt-8">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Usage Limits
+        </h3>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            {
+              label: "Max Agents",
+              field: "limits.maxAgents",
+              description: "Number of agent accounts allowed",
+            },
+            {
+              label: "Max Destinations",
+              field: "limits.maxDestinations",
+              description: "Total destinations allowed",
+            },
+            {
+              label: "Max Packages",
+              field: "limits.maxPackages",
+              description: "Total packages allowed",
+            },
+          ].map((item) => (
+            <div
+              key={item.label}
+              className="rounded-2xl border bg-muted/20 p-5 space-y-3 transition hover:bg-muted/40"
+            >
+              <div className="space-y-1">
+                <div className="text-sm font-medium">
+                  {item.label} <span className="text-red-500">*</span>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {item.description}
+                </div>
+              </div>
+
+              <Input
+                type="number"
+                className="h-10 rounded-lg"
+                {...form.register(item.field as any, {
+                  valueAsNumber: true,
+                })}
+              />
+            </div>
+          ))}
         </div>
+      </div>
 
-        <div>
-          <label className="text-sm">Max Destinations</label>
-          <Input
-            type="number"
-            {...form.register("limits.maxDestinations", {
-              valueAsNumber: true,
-            })}
-          />
-        </div>
+      {/* FEATURES */}
+      <div className="space-y-6 border-t pt-8">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Features
+        </h3>
 
-        <div>
-          <label className="text-sm">Max Packages</label>
-          <Input
-            type="number"
-            {...form.register("limits.maxPackages", {
-              valueAsNumber: true,
-            })}
+        <div className="flex items-center justify-between rounded-2xl border bg-muted/20 p-6 transition hover:bg-muted/40">
+          <div className="space-y-1">
+            <div className="text-sm font-medium">
+              Media Upload Support
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Allow tenants to upload cover images & galleries
+            </div>
+          </div>
+
+          <Switch
+            checked={form.watch("limits.mediaEnabled")}
+            onCheckedChange={(value) =>
+              form.setValue("limits.mediaEnabled", value)
+            }
           />
         </div>
       </div>
 
-      {/* Media Toggle */}
-      <div className="flex items-center justify-between border rounded p-4">
-        <div>
-          <div className="font-medium text-sm">
-            Media Enabled
-          </div>
-          <div className="text-xs text-muted-foreground">
-            Allow image uploads
-          </div>
-        </div>
-        <Switch
-          checked={form.watch("limits.mediaEnabled")}
-          onCheckedChange={(value) =>
-            form.setValue("limits.mediaEnabled", value)
-          }
-        />
-      </div>
-
-      {/* Actions */}
-      <div className="flex justify-end gap-3">
+      {/* ACTIONS */}
+      <div className="flex justify-end gap-3 border-t pt-8">
         <Button
           type="button"
           variant="outline"
+          className="rounded-lg px-6"
           onClick={() => router.push("/plans")}
         >
           Cancel
         </Button>
 
-        <Button type="submit" disabled={mutation.isPending}>
+        <Button
+          type="submit"
+          className="rounded-lg px-8"
+          disabled={mutation.isPending}
+        >
           {mutation.isPending ? "Saving..." : "Save Plan"}
         </Button>
       </div>
     </form>
+
+
   );
 }

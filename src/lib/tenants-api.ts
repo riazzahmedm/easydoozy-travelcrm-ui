@@ -19,3 +19,16 @@ export async function createTenant(payload: any) {
   const res = await api.post("/tenants", payload);
   return res.data;
 }
+
+export async function updateTenant(
+  id: string,
+  payload: {
+    adminName?: string;
+    adminEmail?: string;
+    logo?: string;
+    color?: string;
+  }
+) {
+  const res = await api.patch(`/tenants/${id}`, payload);
+  return res.data;
+}

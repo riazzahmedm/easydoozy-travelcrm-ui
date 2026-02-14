@@ -20,6 +20,9 @@ export default async function EditPlanPage(props: {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">Edit Plan</h1>
+      <p className="text-sm text-muted-foreground">
+          Configure subscription limits and features.
+        </p>
       <PlanForm initialData={result.plan} />
     </div>
   );

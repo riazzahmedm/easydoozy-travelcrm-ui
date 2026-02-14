@@ -30,9 +30,10 @@ export function TenantsTable() {
   return (
     <div className="bg-white rounded border overflow-hidden">
       <table className="w-full text-sm">
-        <thead className="bg-muted">
+        <thead>
           <tr>
             <th className="p-3 text-left">Tenant</th>
+            <th className="p-3 text-left">Plan</th>
             <th className="p-3 text-left">Users</th>
             <th className="p-3 text-left">Destinations</th>
             <th className="p-3 text-left">Packages</th>
@@ -42,29 +43,67 @@ export function TenantsTable() {
         </thead>
 
         <tbody>
-          {data.map((tenant: any) => (
-            <tr key={tenant.id} className="border-t">
-              <td className="p-3 font-medium">
-                {tenant.name}
-                <div className="text-xs text-muted-foreground">
-                  {tenant.slug}
-                </div>
-              </td>
+          {data.map((tenant: any) => {
+            const isPlatform = tenant.slug === "platform";
 
-              <td className="p-3">{tenant._count.users}</td>
-              <td className="p-3">{tenant._count.destinations}</td>
-              <td className="p-3">{tenant._count.packages}</td>
+            return (
+              <tr
+                key={tenant.id}
+                className={`
+          border-t transition-colors
+          ${isPlatform ? "bg-muted/40 opacity-70" : "hover:bg-muted/40"}
+        `}
+              >
+                {/* Tenant */}
+                <td className="p-3 font-medium">
+                  {tenant.name}
+                  <div className="text-xs text-muted-foreground flex items-center gap-2">
+                    {tenant.slug}
+                    {isPlatform && (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-200 text-slate-700">
+                        SYSTEM
+                      </span>
+                    )}
+                  </div>
+                </td>
 
-              <td className="p-3">
-                <TenantStatusBadge status={tenant.status} />
-              </td>
+                {/* Plan */}
+                <td className="p-3">
+                  {!isPlatform && (tenant.subscription?.plan ? (
+                    <div className="flex flex-col">
+                      <span className="font-medium">
+                        {tenant.subscription.plan.name}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {tenant.subscription.status}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-rose-500">
+                      No Plan
+                    </span>
+                  ))}
+                </td>
 
-              <td className="p-3 text-right">
-                <TenantActions tenant={tenant} />
-              </td>
-            </tr>
-          ))}
+                <td className="p-3">{tenant._count.users}</td>
+                <td className="p-3">{tenant._count.destinations}</td>
+                <td className="p-3">{tenant._count.packages}</td>
+
+                <td className="p-3">
+                  <TenantStatusBadge status={tenant.status} />
+                </td>
+
+                {/* Actions */}
+                <td className="p-3 text-right">
+                  {!isPlatform && (
+                    <TenantActions tenant={tenant} />
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
+
       </table>
     </div>
   );

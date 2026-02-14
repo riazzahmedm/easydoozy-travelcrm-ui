@@ -21,6 +21,8 @@ export function CreateTenantForm() {
     adminEmail: "",
     adminPassword: "",
     planId: "",
+    logo: "",
+    color: ""
   });
 
   const { data: plans } = useQuery({
@@ -37,6 +39,8 @@ export function CreateTenantForm() {
         adminName: form.adminName,
         adminEmail: form.adminEmail,
         adminPassword: form.adminPassword,
+        logo: form.logo,
+        color: form.color,
       });
 
       // 2️⃣ Assign subscription
@@ -69,91 +73,198 @@ export function CreateTenantForm() {
   });
 
   return (
-    <div className="bg-white rounded border p-6 space-y-6">
-      {/* Tenant Info */}
-      <div className="space-y-4">
-        <h3 className="font-medium">Tenant Info</h3>
+    <div className="max-w-2xl rounded-2xl border bg-white p-10 shadow-sm space-y-8">
 
-        <Input
-          placeholder="Tenant Name"
-          value={form.tenantName}
-          onChange={(e) =>
-            setForm({ ...form, tenantName: e.target.value })
-          }
-        />
+      {/* TENANT INFO */}
+      <div className="space-y-6">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Tenant Information
+        </h3>
 
-        <Input
-          placeholder="Slug"
-          value={form.slug}
-          onChange={(e) =>
-            setForm({ ...form, slug: e.target.value })
-          }
-        />
+        <div className="grid gap-6">
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              Tenant Name <span className="text-red-500">*</span>
+            </label>
+            <Input
+              className="h-11 rounded-lg"
+              placeholder="Tiger Holidays"
+              value={form.tenantName}
+              onChange={(e) =>
+                setForm({ ...form, tenantName: e.target.value })
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              Slug <span className="text-red-500">*</span>
+            </label>
+            <Input
+              className="h-11 rounded-lg lowercase"
+              placeholder="tiger-holidays"
+              value={form.slug}
+              onChange={(e) =>
+                setForm({ ...form, slug: e.target.value })
+              }
+            />
+            <p className="text-xs text-muted-foreground">
+              Used for tenant URL & identification.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Logo URL</label>
+            <Input
+              className="h-11 rounded-lg"
+              placeholder="https://cdn.site.com/logo.png"
+              value={form.logo}
+              onChange={(e) =>
+                setForm({ ...form, logo: e.target.value })
+              }
+            />
+            {form.logo && (
+              <img
+                src={form.logo}
+                className="h-14 mt-2 rounded border p-2 object-contain bg-white"
+              />
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Brand Color</label>
+            <Input
+              className="h-11 rounded-lg"
+              placeholder="#0f172a"
+              value={form.color}
+              onChange={(e) =>
+                setForm({ ...form, color: e.target.value })
+              }
+            />
+            {form.color && (
+              <div
+                className="h-10 w-10 rounded-lg border mt-2"
+                style={{ background: form.color }}
+              />
+            )}
+          </div>
+
+        </div>
       </div>
 
-      {/* Admin Info */}
-      <div className="space-y-4">
-        <h3 className="font-medium">Admin Info</h3>
+      {/* ADMIN INFO */}
+      <div className="space-y-6 border-t pt-8">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Admin Account
+        </h3>
 
-        <Input
-          placeholder="Admin Name"
-          value={form.adminName}
-          onChange={(e) =>
-            setForm({ ...form, adminName: e.target.value })
-          }
-        />
+        <div className="grid gap-6">
 
-        <Input
-          placeholder="Admin Email"
-          value={form.adminEmail}
-          onChange={(e) =>
-            setForm({ ...form, adminEmail: e.target.value })
-          }
-        />
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              Admin Name <span className="text-red-500">*</span>
+            </label>
+            <Input
+              className="h-11 rounded-lg"
+              placeholder="John Doe"
+              value={form.adminName}
+              onChange={(e) =>
+                setForm({ ...form, adminName: e.target.value })
+              }
+            />
+          </div>
 
-        <Input
-          type="password"
-          placeholder="Admin Password"
-          value={form.adminPassword}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              adminPassword: e.target.value,
-            })
-          }
-        />
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              Admin Email <span className="text-red-500">*</span>
+            </label>
+            <Input
+              className="h-11 rounded-lg"
+              type="email"
+              placeholder="admin@tigerholidays.com"
+              value={form.adminEmail}
+              onChange={(e) =>
+                setForm({ ...form, adminEmail: e.target.value })
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              Admin Password <span className="text-red-500">*</span>
+            </label>
+            <Input
+              className="h-11 rounded-lg"
+              type="password"
+              placeholder="••••••••"
+              value={form.adminPassword}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  adminPassword: e.target.value,
+                })
+              }
+            />
+          </div>
+
+        </div>
       </div>
 
-      {/* Plan Selection */}
-      <div className="space-y-4">
-        <h3 className="font-medium">Subscription</h3>
+      {/* PLAN SELECTION */}
+      <div className="space-y-6 border-t pt-8">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Subscription Plan
+        </h3>
 
-        <select
-          className="border rounded px-3 py-2 w-full text-sm"
-          value={form.planId}
-          onChange={(e) =>
-            setForm({ ...form, planId: e.target.value })
-          }
+        <div className="space-y-2">
+          <label className="text-sm font-medium">
+            Select Plan <span className="text-red-500">*</span>
+          </label>
+
+          <div className="rounded-xl border bg-muted/40 p-5">
+            <select
+              className="w-full rounded-lg border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              value={form.planId}
+              onChange={(e) =>
+                setForm({ ...form, planId: e.target.value })
+              }
+            >
+              <option value="">Select Plan</option>
+              {plans?.map((plan: any) => (
+                <option key={plan.id} value={plan.id}>
+                  {plan.name}
+                </option>
+              ))}
+            </select>
+
+            <p className="mt-2 text-xs text-muted-foreground">
+              You can change this later from tenant settings.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ACTIONS */}
+      <div className="flex justify-end gap-3 border-t pt-8">
+        <Button
+          variant="outline"
+          className="rounded-lg px-6"
+          onClick={() => router.push("/tenants")}
         >
-          <option value="">Select Plan</option>
-          {plans?.map((plan: any) => (
-            <option key={plan.id} value={plan.id}>
-              {plan.name}
-            </option>
-          ))}
-        </select>
-      </div>
+          Cancel
+        </Button>
 
-      <div className="flex justify-end">
         <Button
           disabled={mutation.isPending}
+          className="rounded-lg px-8"
           onClick={() => mutation.mutate()}
         >
-          {mutation.isPending
-            ? "Creating..."
-            : "Create Tenant"}
+          {mutation.isPending ? "Creating..." : "Create Tenant"}
         </Button>
       </div>
     </div>
+
+
   );
 }
