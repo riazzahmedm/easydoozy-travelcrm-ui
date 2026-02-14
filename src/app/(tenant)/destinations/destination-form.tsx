@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { TagSelector } from "@/components/ui/tag-selector";
 import { formatApiError } from "@/lib/utils";
 import { z } from "zod";
+import Image from "next/image";
 
 const destinationSchema = z.object({
   name: z.string().min(2, "Destination name is required"),
@@ -339,10 +340,15 @@ export function DestinationForm({
           />
 
           {form.coverImageUrl && (
-            <img
-              src={form.coverImageUrl}
-              className="mt-3 h-40 w-full rounded-xl object-cover border"
-            />
+            <div className="relative mt-3 h-40 w-full overflow-hidden rounded-xl border">
+              <Image
+                src={form.coverImageUrl}
+                alt="Destination cover preview"
+                fill
+                unoptimized
+                className="object-cover"
+              />
+            </div>
           )}
         </div>
 
@@ -370,9 +376,13 @@ export function DestinationForm({
           <div className="flex gap-3 mt-4 flex-wrap">
             {form.galleryUrls?.map(
               (url: string, i: number) => (
-                <img
+                <Image
                   key={i}
                   src={url}
+                  alt={`Destination gallery preview ${i + 1}`}
+                  width={112}
+                  height={80}
+                  unoptimized
                   className="h-20 w-28 rounded-lg object-cover border"
                 />
               )

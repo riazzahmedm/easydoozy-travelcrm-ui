@@ -14,6 +14,7 @@ import { ItineraryBuilder } from "@/components/packages/itinerary-builder";
 import { StringListBuilder } from "@/components/packages/string-list-builder";
 import { formatApiError } from "@/lib/utils";
 import { z } from "zod";
+import Image from "next/image";
 
 const packageSchema = z.object({
   name: z.string().min(2, "Package name is required"),
@@ -425,10 +426,15 @@ export function PackageForm({
           />
 
           {form.coverImageUrl && (
-            <img
-              src={form.coverImageUrl}
-              className="mt-3 h-40 w-full rounded-xl object-cover border"
-            />
+            <div className="relative mt-3 h-40 w-full overflow-hidden rounded-xl border">
+              <Image
+                src={form.coverImageUrl}
+                alt="Package cover preview"
+                fill
+                unoptimized
+                className="object-cover"
+              />
+            </div>
           )}
         </div>
 
@@ -455,9 +461,13 @@ export function PackageForm({
           <div className="flex gap-3 mt-4 flex-wrap">
             {form.galleryUrls?.map(
               (url: string, i: number) => (
-                <img
+                <Image
                   key={i}
                   src={url}
+                  alt={`Package gallery preview ${i + 1}`}
+                  width={112}
+                  height={80}
+                  unoptimized
                   className="h-20 w-28 rounded-lg object-cover border"
                 />
               )
