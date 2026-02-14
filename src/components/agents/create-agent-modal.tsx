@@ -6,6 +6,7 @@ import { createAgent } from "@/lib/agents-api";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { formatApiError } from "@/lib/utils";
 
 interface Props {
   open: boolean;
@@ -42,9 +43,8 @@ export function CreateAgentModal({
     },
     onError: (err: any) => {
       push({
-        title:
-          err?.response?.data?.message ||
-          "Failed to create agent",
+        title: "Error",
+        description: formatApiError(err),
         variant: "error",
       });
     },
@@ -53,52 +53,84 @@ export function CreateAgentModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white w-full max-w-md rounded-xl p-6 shadow-xl space-y-4">
-        <h2 className="text-lg font-semibold">
-          Create Agent
-        </h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="w-full max-w-md rounded-2xl border bg-white p-8 shadow-2xl space-y-8">
 
-        <Input
-          placeholder="Agent Name"
-          value={form.name}
-          onChange={(e) =>
-            setForm({ ...form, name: e.target.value })
-          }
-        />
+        {/* HEADER */}
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold">
+            Create Agent
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Add a new agent to this tenant.
+          </p>
+        </div>
 
-        <Input
-          placeholder="Email"
-          value={form.email}
-          onChange={(e) =>
-            setForm({ ...form, email: e.target.value })
-          }
-        />
+        {/* FORM FIELDS */}
+        <div className="space-y-6">
 
-        <Input
-          type="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              password: e.target.value,
-            })
-          }
-        />
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              Agent Name <span className="text-red-500">*</span>
+            </label>
+            <Input
+              className="h-11 rounded-lg"
+              placeholder="John Doe"
+              value={form.name}
+              onChange={(e) =>
+                setForm({ ...form, name: e.target.value })
+              }
+            />
+          </div>
 
-        <div className="flex justify-end gap-3 pt-2">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              Email <span className="text-red-500">*</span>
+            </label>
+            <Input
+              className="h-11 rounded-lg"
+              type="email"
+              placeholder="john@company.com"
+              value={form.email}
+              onChange={(e) =>
+                setForm({ ...form, email: e.target.value })
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              Password <span className="text-red-500">*</span>
+            </label>
+            <Input
+              className="h-11 rounded-lg"
+              type="password"
+              placeholder="••••••••"
+              value={form.password}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  password: e.target.value,
+                })
+              }
+            />
+          </div>
+
+        </div>
+
+        {/* ACTIONS */}
+        <div className="flex justify-end gap-3 border-t pt-6">
           <Button
             variant="outline"
+            className="rounded-lg px-6"
             onClick={onClose}
           >
             Cancel
           </Button>
 
           <Button
-            onClick={() =>
-              mutation.mutate(form)
-            }
+            className="rounded-lg px-8"
+            onClick={() => mutation.mutate(form)}
             disabled={mutation.isPending}
           >
             {mutation.isPending
@@ -106,6 +138,7 @@ export function CreateAgentModal({
               : "Create Agent"}
           </Button>
         </div>
+
       </div>
     </div>
   );

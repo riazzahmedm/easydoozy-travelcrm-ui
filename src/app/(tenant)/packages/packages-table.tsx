@@ -40,13 +40,13 @@ export function PackagesTable() {
   return (
     <div className="bg-white border rounded overflow-hidden">
       <table className="w-full text-sm">
-        <thead className="bg-muted">
+        <thead>
           <tr>
             <th className="p-3 text-left">Name</th>
             <th className="p-3 text-left">Destination</th>
             <th className="p-3 text-left">Price</th>
             <th className="p-3 text-left">Status</th>
-            <th className="p-3 text-right">Actions</th>
+            <th className="p-4 text-right">Actions</th>
           </tr>
         </thead>
         <tbody>

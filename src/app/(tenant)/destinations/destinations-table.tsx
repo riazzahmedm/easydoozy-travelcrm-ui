@@ -66,13 +66,13 @@ export function DestinationsTable({ ...props }) {
     <>
       <div className="bg-white border rounded overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-muted">
+          <thead>
             <tr>
               <th className="p-3 text-left">Name</th>
               <th className="p-3 text-left">Location</th>
               <th className="p-3 text-left">Tags</th>
               <th className="p-3 text-left">Status</th>
-              <th className="p-3 text-right">Actions</th>
+              <th className="p-4 text-right">Actions</th>
             </tr>
           </thead>
 

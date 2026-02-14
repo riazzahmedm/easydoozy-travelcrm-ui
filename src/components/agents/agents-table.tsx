@@ -32,12 +32,12 @@ export function AgentsTable() {
   return (
     <div className="bg-white border rounded-xl overflow-hidden">
       <table className="w-full text-sm">
-        <thead className="bg-muted">
+        <thead>
           <tr>
             <th className="p-3 text-left">Name</th>
             <th className="p-3 text-left">Email</th>
             <th className="p-3 text-left">Status</th>
-            <th className="p-3 text-right">Action</th>
+            <th className="p-4 text-right">Action</th>
           </tr>
         </thead>
 

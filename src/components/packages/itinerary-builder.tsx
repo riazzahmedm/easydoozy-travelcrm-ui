@@ -64,6 +64,7 @@ export function ItineraryBuilder({ value, onChange }: Props) {
           size="sm"
           variant="outline"
           onClick={addDay}
+          type="button"
         >
           + Add Day
         </Button>
@@ -89,6 +90,7 @@ export function ItineraryBuilder({ value, onChange }: Props) {
               size="sm"
               variant="ghost"
               onClick={() => removeDay(index)}
+              type="button"
             >
               Remove
             </Button>

@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPlan, updatePlan } from "@/lib/plans-api";
 import { useToast } from "@/components/ui/toast";
+import { formatApiError } from "@/lib/utils";
 
 type PlanFormValues = {
   name: string;
@@ -70,7 +71,7 @@ export function PlanForm({
       push({
         variant: "error",
         title: "Save failed",
-        description: message,
+        description: formatApiError(message),
       });
     }
   };

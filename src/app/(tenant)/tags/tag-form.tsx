@@ -40,9 +40,16 @@ export function TagForm() {
   });
 
   return (
-    <div className="flex gap-2">
+    <div className="space-y-4">
+  <div className="space-y-2">
+    <label className="text-sm font-medium">
+      Tag Name <span className="text-red-500">*</span>
+    </label>
+
+    <div className="flex gap-3">
       <Input
-        placeholder="Tag name (e.g. Honeymoon)"
+        className="h-11 rounded-lg"
+        placeholder="e.g. Honeymoon"
         value={name}
         onChange={(e) =>
           setName(e.target.value)
@@ -50,6 +57,7 @@ export function TagForm() {
       />
 
       <Button
+        className="h-11 rounded-lg px-6"
         disabled={!name || mutation.isPending}
         onClick={() =>
           mutation.mutate({
@@ -58,8 +66,15 @@ export function TagForm() {
           })
         }
       >
-        Add
+        {mutation.isPending ? "Adding..." : "Add Tag"}
       </Button>
     </div>
+  </div>
+
+  <p className="text-xs text-muted-foreground">
+    Slug will be generated automatically.
+  </p>
+</div>
+
   );
 }

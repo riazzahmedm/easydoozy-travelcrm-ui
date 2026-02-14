@@ -33,36 +33,59 @@ export function TagsTable() {
   }
 
   return (
-    <div className="bg-white border rounded p-6 space-y-6">
-      <TagForm />
+   <div className="max-w-2xl space-y-10 rounded-2xl border bg-white p-8 shadow-sm">
 
-      <div className="border-t pt-4 space-y-2">
-        {data?.map((tag: any) => (
-          <div
-            key={tag.id}
-            className="flex items-center justify-between border rounded px-3 py-2"
-          >
-            <div>
-              <div className="font-medium">
-                {tag.name}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {tag.slug}
-              </div>
-            </div>
+  {/* CREATE TAG */}
+  <div className="space-y-6">
+    <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+      Create Tag
+    </h3>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                deleteMutation.mutate(tag.id)
-              }
-            >
-              Delete
-            </Button>
-          </div>
-        ))}
+    <TagForm />
+  </div>
+
+  {/* TAG LIST */}
+  <div className="space-y-6 border-t pt-8">
+    <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+      Existing Tags
+    </h3>
+
+    {data?.length === 0 && (
+      <div className="rounded-xl border bg-muted/20 p-6 text-sm text-muted-foreground">
+        No tags created yet.
       </div>
+    )}
+
+    <div className="space-y-3">
+      {data?.map((tag: any) => (
+        <div
+          key={tag.id}
+          className="group flex items-center justify-between rounded-xl border bg-muted/20 px-4 py-3 transition hover:bg-muted/40"
+        >
+          <div>
+            <div className="text-sm font-medium">
+              {tag.name}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {tag.slug}
+            </div>
+          </div>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="opacity-0 group-hover:opacity-100 text-rose-600 hover:text-rose-700 hover:bg-rose-50 transition"
+            onClick={() =>
+              deleteMutation.mutate(tag.id)
+            }
+          >
+            Delete
+          </Button>
+        </div>
+      ))}
     </div>
+  </div>
+</div>
+
   );
 }

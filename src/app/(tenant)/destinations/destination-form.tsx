@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { TagSelector } from "@/components/ui/tag-selector";
+import { formatApiError } from "@/lib/utils";
 
 function slugify(text: string) {
   return text
@@ -97,9 +98,8 @@ export function DestinationForm({
     },
     onError: (err: any) => {
       push({
-        title:
-          err?.response?.data?.message ||
-          "Something went wrong",
+        title: "Error",
+        description: formatApiError(err),
         variant: "error",
       });
     },
@@ -109,95 +109,134 @@ export function DestinationForm({
     user?.role === "AGENT";
 
   return (
-    <div className="bg-white border rounded-xl p-6 space-y-6 shadow-sm">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        mutation.mutate();
+      }}
+      className="max-w-2xl space-y-10 rounded-2xl border bg-white p-8 shadow-sm"
+    >
+      {/* BASIC INFORMATION */}
+      <div className="space-y-6">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Basic Information
+        </h3>
 
-      {/* BASIC INFO */}
-      <div className="grid grid-cols-2 gap-4">
-        <Input
-          placeholder="Destination Name"
-          value={form.name}
-          onChange={(e) => {
-            const name = e.target.value;
-            setForm({
-              ...form,
-              name,
-              slug: slugify(name),
-            });
-          }}
-        />
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Name */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              Destination Name <span className="text-red-500">*</span>
+            </label>
+            <Input
+              className="h-11 rounded-lg"
+              value={form.name}
+              onChange={(e) => {
+                const name = e.target.value;
+                setForm({
+                  ...form,
+                  name,
+                  slug: slugify(name),
+                });
+              }}
+              placeholder="Goa"
+            />
+          </div>
 
-        <Input
-          placeholder="Slug"
-          value={form.slug}
-          disabled={isEdit}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              slug: e.target.value,
-            })
-          }
-        />
+          {/* Slug */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              Slug <span className="text-red-500">*</span>
+            </label>
+            <Input
+              className="h-11 rounded-lg lowercase"
+              value={form.slug}
+              disabled={isEdit}
+              onChange={(e) =>
+                setForm({ ...form, slug: e.target.value })
+              }
+              placeholder="goa"
+            />
+          </div>
 
-        <Input
-          placeholder="City"
-          value={form.city}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              city: e.target.value,
-            })
-          }
-        />
+          {/* City */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              City <span className="text-red-500">*</span>
+            </label>
+            <Input
+              className="h-11 rounded-lg"
+              value={form.city}
+              onChange={(e) =>
+                setForm({ ...form, city: e.target.value })
+              }
+              placeholder="Goa"
+            />
+          </div>
 
-        <Input
-          placeholder="Country"
-          value={form.country}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              country: e.target.value,
-            })
-          }
-        />
+          {/* Country */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              Country <span className="text-red-500">*</span>
+            </label>
+            <Input
+              className="h-11 rounded-lg"
+              value={form.country}
+              onChange={(e) =>
+                setForm({ ...form, country: e.target.value })
+              }
+              placeholder="India"
+            />
+          </div>
+        </div>
       </div>
 
       {/* DESCRIPTION */}
-      <textarea
-        className="border rounded px-3 py-2 w-full text-sm min-h-[120px]"
-        placeholder="Description"
-        value={form.description}
-        onChange={(e) =>
-          setForm({
-            ...form,
-            description: e.target.value,
-          })
-        }
-      />
+      <div className="space-y-6 border-t pt-8">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Description
+        </h3>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">
+            Overview
+          </label>
+
+          <textarea
+            className="min-h-[140px] w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            placeholder="Describe this destination..."
+            value={form.description}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                description: e.target.value,
+              })
+            }
+          />
+        </div>
+      </div>
 
       {/* TAGS */}
-      <div>
-        <label className="text-sm font-medium">
+      <div className="space-y-6 border-t pt-8">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Tags
-        </label>
+        </h3>
 
         <TagSelector
           selected={form.tagIds || []}
           onChange={(ids) =>
-            setForm({
-              ...form,
-              tagIds: ids,
-            })
+            setForm({ ...form, tagIds: ids })
           }
         />
       </div>
 
       {/* STATUS */}
-      <div>
-        <label className="text-sm font-medium">
+      <div className="space-y-6 border-t pt-8">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Status
-        </label>
+        </h3>
 
-        <div className="flex gap-3 mt-2">
+        <div className="flex items-center gap-4">
           <Button
             type="button"
             variant={
@@ -206,10 +245,7 @@ export function DestinationForm({
                 : "outline"
             }
             onClick={() =>
-              setForm({
-                ...form,
-                status: "DRAFT",
-              })
+              setForm({ ...form, status: "DRAFT" })
             }
           >
             Draft
@@ -241,70 +277,79 @@ export function DestinationForm({
         </div>
       </div>
 
-      {/* COVER IMAGE */}
-      <div>
-        <label className="text-sm font-medium">
-          Cover Image URL
-        </label>
+      {/* MEDIA */}
+      <div className="space-y-6 border-t pt-8">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Media
+        </h3>
 
-        <Input
-          placeholder="https://..."
-          value={form.coverImageUrl}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              coverImageUrl: e.target.value,
-            })
-          }
-        />
+        {/* Cover */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">
+            Cover Image URL
+          </label>
 
-        {form.coverImageUrl && (
-          <img
-            src={form.coverImageUrl}
-            className="mt-3 h-40 rounded object-cover"
+          <Input
+            className="h-11 rounded-lg"
+            placeholder="https://..."
+            value={form.coverImageUrl}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                coverImageUrl: e.target.value,
+              })
+            }
           />
-        )}
-      </div>
 
-      {/* GALLERY */}
-      <div>
-        <label className="text-sm font-medium">
-          Gallery URLs (comma separated)
-        </label>
-
-        <Input
-          placeholder="https://image1.jpg, https://image2.jpg"
-          value={form.galleryUrls?.join(", ") ?? ""}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              galleryUrls: e.target.value
-                .split(",")
-                .map((u) => u.trim())
-                .filter(Boolean),
-            })
-          }
-        />
-
-
-        <div className="flex gap-2 mt-3 flex-wrap">
-          {form.galleryUrls?.map(
-            (url: string, i: number) => (
-              <img
-                key={i}
-                src={url}
-                className="h-20 rounded object-cover"
-              />
-            )
+          {form.coverImageUrl && (
+            <img
+              src={form.coverImageUrl}
+              className="mt-3 h-40 w-full rounded-xl object-cover border"
+            />
           )}
+        </div>
+
+        {/* Gallery */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">
+            Gallery URLs
+          </label>
+
+          <Input
+            className="h-11 rounded-lg"
+            placeholder="https://img1.jpg, https://img2.jpg"
+            value={form.galleryUrls?.join(", ") ?? ""}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                galleryUrls: e.target.value
+                  .split(",")
+                  .map((u) => u.trim())
+                  .filter(Boolean),
+              })
+            }
+          />
+
+          <div className="flex gap-3 mt-4 flex-wrap">
+            {form.galleryUrls?.map(
+              (url: string, i: number) => (
+                <img
+                  key={i}
+                  src={url}
+                  className="h-20 w-28 rounded-lg object-cover border"
+                />
+              )
+            )}
+          </div>
         </div>
       </div>
 
       {/* ACTIONS */}
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-3 border-t pt-8">
         <Button
+          type="submit"
+          className="rounded-lg px-8"
           disabled={mutation.isPending}
-          onClick={() => mutation.mutate()}
         >
           {mutation.isPending
             ? "Saving..."
@@ -313,6 +358,7 @@ export function DestinationForm({
               : "Create Destination"}
         </Button>
       </div>
-    </div>
+    </form>
+
   );
 }

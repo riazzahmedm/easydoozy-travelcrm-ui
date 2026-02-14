@@ -72,7 +72,7 @@ export function ToastProvider({
               <div>
                 <div className="text-sm font-medium">{toast.title}</div>
                 {toast.description && (
-                  <div className="text-xs opacity-70">
+                  <div className="text-xs opacity-70 whitespace-pre-line">
                     {toast.description}
                   </div>
                 )}
