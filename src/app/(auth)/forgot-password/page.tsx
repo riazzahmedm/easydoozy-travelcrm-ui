@@ -47,6 +47,18 @@ export default function ForgotPasswordPage() {
     }
   };
 
+  const onInvalid = () => {
+    const message =
+      form.formState.errors.email?.message ||
+      "Please fix the highlighted form errors.";
+
+    push({
+      variant: "error",
+      title: "Validation failed",
+      description: String(message),
+    });
+  };
+
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_#f8fafc,_#e2e8f0_45%,_#f8fafc_80%)]">
       <div className="mx-auto flex min-h-screen w-full max-w-4xl items-center justify-center px-6 py-12">
@@ -84,7 +96,7 @@ export default function ForgotPasswordPage() {
             <Card className="border-slate-200">
               <CardContent className="space-y-5 p-6">
                 <form
-                  onSubmit={form.handleSubmit(onSubmit)}
+                  onSubmit={form.handleSubmit(onSubmit, onInvalid)}
                   className="space-y-5"
                 >
                   {error && (

@@ -5,6 +5,19 @@ import { getAgents, updateAgentStatus } from "@/lib/agents-api";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "../ui/badge";
+import { formatApiError } from "@/lib/utils";
+
+type AgentItem = {
+  id: string;
+  name: string;
+  email: string;
+  isActive: boolean;
+};
+
+type UpdateAgentStatusInput = {
+  id: string;
+  isActive: boolean;
+};
 
 export function AgentsTable() {
   const { push } = useToast();
@@ -16,11 +29,23 @@ export function AgentsTable() {
   });
 
   const mutation = useMutation({
-    mutationFn: ({ id, isActive }: any) =>
+    mutationFn: ({ id, isActive }: UpdateAgentStatusInput) =>
       updateAgentStatus(id, isActive),
     onSuccess: () => {
+      push({
+        title: "Agent status updated",
+        description: "Agent status was updated successfully.",
+        variant: "success",
+      });
       queryClient.invalidateQueries({
         queryKey: ["agents"],
+      });
+    },
+    onError: (err: unknown) => {
+      push({
+        title: "Status update failed",
+        description: formatApiError(err),
+        variant: "error",
       });
     },
   });
@@ -42,7 +67,7 @@ export function AgentsTable() {
         </thead>
 
         <tbody>
-          {data?.map((agent: any) => (
+          {data?.map((agent: AgentItem) => (
             <tr key={agent.id} className="border-t">
               <td className="p-3">{agent.name}</td>
               <td className="p-3">{agent.email}</td>

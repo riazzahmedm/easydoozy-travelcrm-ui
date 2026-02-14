@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatApiError } from "@/lib/utils";
+import { z } from "zod";
 
 interface Props {
   open: boolean;
@@ -26,11 +27,18 @@ export function CreateAgentModal({
     password: "",
   });
 
+  const agentSchema = z.object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Enter a valid email"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+  });
+
   const mutation = useMutation({
     mutationFn: createAgent,
     onSuccess: () => {
       push({
         title: "Agent created successfully",
+        description: "The agent has been added.",
         variant: "success",
       });
 
@@ -41,9 +49,9 @@ export function CreateAgentModal({
       onClose();
       setForm({ name: "", email: "", password: "" });
     },
-    onError: (err: any) => {
+    onError: (err: unknown) => {
       push({
-        title: "Error",
+        title: "Create agent failed",
         description: formatApiError(err),
         variant: "error",
       });
@@ -130,7 +138,18 @@ export function CreateAgentModal({
 
           <Button
             className="rounded-lg px-8"
-            onClick={() => mutation.mutate(form)}
+            onClick={() => {
+              const parsed = agentSchema.safeParse(form);
+              if (!parsed.success) {
+                push({
+                  title: "Validation failed",
+                  description: parsed.error.issues[0]?.message ?? "Invalid input",
+                  variant: "error",
+                });
+                return;
+              }
+              mutation.mutate(parsed.data);
+            }}
             disabled={mutation.isPending}
           >
             {mutation.isPending

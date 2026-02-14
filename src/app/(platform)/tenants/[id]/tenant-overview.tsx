@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
 import { TenantDetails } from "@/types/api";
 import Image from "next/image";
+import { formatApiError } from "@/lib/utils";
 
 export function TenantOverview({ tenant }: { tenant: TenantDetails }) {
   const queryClient = useQueryClient();
@@ -38,10 +39,10 @@ export function TenantOverview({ tenant }: { tenant: TenantDetails }) {
       });
       router.refresh();
     },
-    onError: () => {
+    onError: (err: unknown) => {
       push({
         title: "Update failed",
-        description: "Could not update tenant status",
+        description: formatApiError(err),
         variant: "error",
       });
     },

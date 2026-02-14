@@ -11,8 +11,23 @@ import { useToast } from "@/components/ui/toast";
 import { deleteDestination } from "@/lib/destinations-api";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { useQueryClient } from "@tanstack/react-query";
+import { formatApiError } from "@/lib/utils";
 
-export function DestinationsTable({ ...props }) {
+type DestinationTag = {
+  id: string;
+  name: string;
+};
+
+type DestinationItem = {
+  id: string;
+  name: string;
+  city: string;
+  country: string;
+  status: string;
+  tags?: DestinationTag[];
+};
+
+export function DestinationsTable() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const { user } = useAuth();
   const router = useRouter();
@@ -29,6 +44,7 @@ export function DestinationsTable({ ...props }) {
     onSuccess: () => {
       push({
         title: "Destination deleted",
+        description: "The destination was removed successfully.",
         variant: "success",
       });
 
@@ -38,9 +54,10 @@ export function DestinationsTable({ ...props }) {
 
       setSelectedId(null);
     },
-    onError: () => {
+    onError: (err: unknown) => {
       push({
-        title: "Failed to delete destination",
+        title: "Delete failed",
+        description: formatApiError(err),
         variant: "error",
       });
     },
@@ -77,7 +94,7 @@ export function DestinationsTable({ ...props }) {
           </thead>
 
           <tbody>
-            {data.map((item: any) => (
+            {data.map((item: DestinationItem) => (
               <tr key={item.id} className="border-t">
                 <td className="p-3 font-medium">
                   {item.name}
@@ -89,7 +106,7 @@ export function DestinationsTable({ ...props }) {
 
                 <td className="p-3">
                   <div className="flex flex-wrap gap-1">
-                    {item.tags?.map((tag: any) => (
+                    {item.tags?.map((tag: DestinationTag) => (
                       <Badge
                         key={tag.id}
                         variant="outline"

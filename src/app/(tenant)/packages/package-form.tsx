@@ -13,6 +13,27 @@ import { Input } from "@/components/ui/input";
 import { ItineraryBuilder } from "@/components/packages/itinerary-builder";
 import { StringListBuilder } from "@/components/packages/string-list-builder";
 import { formatApiError } from "@/lib/utils";
+import { z } from "zod";
+
+const packageSchema = z.object({
+  name: z.string().min(2, "Package name is required"),
+  slug: z
+    .string()
+    .min(2, "Slug is required")
+    .regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens"),
+  duration: z.string().optional(),
+  priceFrom: z.number().min(0, "Price must be zero or greater"),
+  overview: z.string().optional(),
+  destinationId: z.string().min(1, "Destination is required"),
+  tagIds: z.array(z.string()).optional(),
+  status: z.enum(["DRAFT", "PUBLISHED"]),
+  itinerary: z.array(z.unknown()).optional(),
+  highlights: z.array(z.string()).optional(),
+  inclusions: z.array(z.string()).optional(),
+  exclusions: z.array(z.string()).optional(),
+  coverImageUrl: z.string().optional(),
+  galleryUrls: z.array(z.string()).optional(),
+});
 
 function slugify(text: string) {
   return text
@@ -73,10 +94,11 @@ export function PackageForm({
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const payload = {
+      const parsed = packageSchema.safeParse({
         name: form.name,
+        slug: form.slug,
         duration: form.duration,
-        priceFrom: form.priceFrom,
+        priceFrom: Number(form.priceFrom || 0),
         overview: form.overview,
         destinationId: form.destinationId,
         tagIds: form.tagIds,
@@ -87,17 +109,42 @@ export function PackageForm({
         exclusions: form.exclusions,
         coverImageUrl: form.coverImageUrl,
         galleryUrls: form.galleryUrls,
+      });
+
+      if (!parsed.success) {
+        throw new Error(
+          parsed.error.issues[0]?.message ?? "Invalid package form"
+        );
+      }
+
+      const payload = {
+        name: parsed.data.name,
+        duration: parsed.data.duration,
+        priceFrom: parsed.data.priceFrom,
+        overview: parsed.data.overview,
+        destinationId: parsed.data.destinationId,
+        tagIds: parsed.data.tagIds,
+        status: parsed.data.status,
+        itinerary: parsed.data.itinerary,
+        highlights: parsed.data.highlights,
+        inclusions: parsed.data.inclusions,
+        exclusions: parsed.data.exclusions,
+        coverImageUrl: parsed.data.coverImageUrl,
+        galleryUrls: parsed.data.galleryUrls,
       };
 
       return isEdit
         ? updatePackage(initialData?.id, payload)
-        : createPackage({ ...payload, slug: form.slug });
+        : createPackage({ ...payload, slug: parsed.data.slug });
     },
     onSuccess: () => {
       push({
         title: isEdit
           ? "Package updated"
           : "Package created",
+        description: isEdit
+          ? "Package details updated successfully."
+          : "Package created successfully.",
         variant: "success",
       });
 
@@ -107,9 +154,9 @@ export function PackageForm({
 
       router.push("/packages");
     },
-    onError: (err: any) => {
+    onError: (err: unknown) => {
       push({
-        title: "Error",
+        title: "Save failed",
         description: formatApiError(err),
         variant: "error",
       });

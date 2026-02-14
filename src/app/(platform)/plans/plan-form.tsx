@@ -1,6 +1,8 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -23,6 +25,18 @@ type PlanFormValues = {
   };
 };
 
+const planSchema = z.object({
+  name: z.string().min(2, "Plan name is required"),
+  code: z.string().min(2, "Plan code is required").optional(),
+  isActive: z.boolean(),
+  limits: z.object({
+    maxAgents: z.number().min(0, "Must be 0 or more"),
+    maxDestinations: z.number().min(0, "Must be 0 or more"),
+    maxPackages: z.number().min(0, "Must be 0 or more"),
+    mediaEnabled: z.boolean(),
+  }),
+});
+
 export function PlanForm({
   initialData,
 }: {
@@ -33,6 +47,8 @@ export function PlanForm({
   const { push } = useToast();
 
   const form = useForm<PlanFormValues>({
+    resolver: zodResolver(planSchema),
+    mode: "onBlur",
     defaultValues: initialData ?? {
       name: "",
       code: "",
@@ -64,6 +80,9 @@ export function PlanForm({
       push({
         variant: "success",
         title: initialData ? "Plan updated" : "Plan created",
+        description: initialData
+          ? "Plan details were updated successfully."
+          : "Plan was created successfully.",
       });
       router.push("/plans");
     } catch (err: unknown) {
@@ -73,6 +92,23 @@ export function PlanForm({
         description: formatApiError(err),
       });
     }
+  };
+
+  const onInvalid = () => {
+    const errors = form.formState.errors;
+    const message =
+      errors.name?.message ||
+      errors.code?.message ||
+      errors.limits?.maxAgents?.message ||
+      errors.limits?.maxDestinations?.message ||
+      errors.limits?.maxPackages?.message ||
+      "Please fix the highlighted form errors.";
+
+    push({
+      variant: "error",
+      title: "Validation failed",
+      description: String(message),
+    });
   };
 
   const limitFields: Array<{
@@ -102,7 +138,7 @@ export function PlanForm({
 
   return (
     <form
-      onSubmit={form.handleSubmit(onSubmit)}
+      onSubmit={form.handleSubmit(onSubmit, onInvalid)}
       className="max-w-2xl rounded-2xl border bg-white p-10 shadow-sm space-y-8"
     >
       {/* BASIC INFO */}

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { formatApiError } from "@/lib/utils";
 
 export function PackagesTable() {
   const router = useRouter();
@@ -25,13 +26,24 @@ export function PackagesTable() {
   const deleteMutation = useMutation({
     mutationFn: deletePackage,
     onSuccess: (_, id) => {
-      push({ title: "Package deleted", variant: "success" });
+      push({
+        title: "Package deleted",
+        description: "The package was removed successfully.",
+        variant: "success",
+      });
 
       queryClient.setQueryData(["packages"], (old: any[]) =>
         old?.filter((p) => p.id !== id)
       );
 
       setSelectedId(null);
+    },
+    onError: (err: unknown) => {
+      push({
+        title: "Delete failed",
+        description: formatApiError(err),
+        variant: "error",
+      });
     },
   });
 

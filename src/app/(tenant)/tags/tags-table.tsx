@@ -5,6 +5,7 @@ import { getTags, deleteTag } from "@/lib/tags-api";
 import { useToast } from "@/components/ui/toast";
 import { TagForm } from "./tag-form";
 import { Button } from "@/components/ui/button";
+import { formatApiError } from "@/lib/utils";
 
 export function TagsTable() {
   const queryClient = useQueryClient();
@@ -20,10 +21,18 @@ export function TagsTable() {
     onSuccess: () => {
       push({
         title: "Tag deleted",
+        description: "The tag was removed successfully.",
         variant: "success",
       });
       queryClient.invalidateQueries({
         queryKey: ["tags"],
+      });
+    },
+    onError: (err: unknown) => {
+      push({
+        title: "Delete failed",
+        description: formatApiError(err),
+        variant: "error",
       });
     },
   });

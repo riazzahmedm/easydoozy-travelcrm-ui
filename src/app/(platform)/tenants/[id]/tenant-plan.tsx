@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
 import { Plan, TenantDetails } from "@/types/api";
+import { formatApiError } from "@/lib/utils";
 
 export function TenantPlan({ tenant }: { tenant: TenantDetails }) {
   const [open, setOpen] = useState(false);
@@ -43,10 +44,10 @@ export function TenantPlan({ tenant }: { tenant: TenantDetails }) {
       setSelectedPlan(null);
       router.refresh();
     },
-    onError: () => {
+    onError: (err: unknown) => {
       push({
         title: "Plan update failed",
-        description: "Unable to change subscription plan",
+        description: formatApiError(err),
         variant: "error",
       });
     },

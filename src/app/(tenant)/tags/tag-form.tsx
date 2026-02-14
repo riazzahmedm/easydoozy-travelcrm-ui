@@ -6,6 +6,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { z } from "zod";
+import { formatApiError } from "@/lib/utils";
 
 function slugify(text: string) {
   return text
@@ -19,11 +21,16 @@ export function TagForm() {
   const queryClient = useQueryClient();
   const { push } = useToast();
 
+  const tagSchema = z.object({
+    name: z.string().min(2, "Tag name must be at least 2 characters"),
+  });
+
   const mutation = useMutation({
     mutationFn: createTag,
     onSuccess: () => {
       push({
         title: "Tag created",
+        description: "The tag was created successfully.",
         variant: "success",
       });
       setName("");
@@ -31,9 +38,10 @@ export function TagForm() {
         queryKey: ["tags"],
       });
     },
-    onError: () => {
+    onError: (err: unknown) => {
       push({
         title: "Failed to create tag",
+        description: formatApiError(err),
         variant: "error",
       });
     },
@@ -59,12 +67,21 @@ export function TagForm() {
       <Button
         className="h-11 rounded-lg px-6"
         disabled={!name || mutation.isPending}
-        onClick={() =>
+        onClick={() => {
+          const parsed = tagSchema.safeParse({ name });
+          if (!parsed.success) {
+            push({
+              title: "Validation failed",
+              description: parsed.error.issues[0]?.message ?? "Invalid input",
+              variant: "error",
+            });
+            return;
+          }
           mutation.mutate({
-            name,
-            slug: slugify(name),
-          })
-        }
+            name: parsed.data.name,
+            slug: slugify(parsed.data.name),
+          });
+        }}
       >
         {mutation.isPending ? "Adding..." : "Add Tag"}
       </Button>

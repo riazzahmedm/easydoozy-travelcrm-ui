@@ -14,6 +14,22 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { TagSelector } from "@/components/ui/tag-selector";
 import { formatApiError } from "@/lib/utils";
+import { z } from "zod";
+
+const destinationSchema = z.object({
+  name: z.string().min(2, "Destination name is required"),
+  slug: z
+    .string()
+    .min(2, "Slug is required")
+    .regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens"),
+  city: z.string().min(2, "City is required"),
+  country: z.string().min(2, "Country is required"),
+  description: z.string().optional(),
+  tagIds: z.array(z.string()).optional(),
+  status: z.enum(["DRAFT", "PUBLISHED"]),
+  coverImageUrl: z.string().optional(),
+  galleryUrls: z.array(z.string()).optional(),
+});
 
 function slugify(text: string) {
   return text
@@ -62,15 +78,33 @@ export function DestinationForm({
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const payload = {
+      const parsed = destinationSchema.safeParse({
         name: form.name,
+        slug: form.slug,
         city: form.city,
         country: form.country,
         description: form.description,
-        status: form.status,
         tagIds: form.tagIds,
+        status: form.status,
         coverImageUrl: form.coverImageUrl,
         galleryUrls: form.galleryUrls,
+      });
+
+      if (!parsed.success) {
+        throw new Error(
+          parsed.error.issues[0]?.message ?? "Invalid destination form"
+        );
+      }
+
+      const payload = {
+        name: parsed.data.name,
+        city: parsed.data.city,
+        country: parsed.data.country,
+        description: parsed.data.description,
+        status: parsed.data.status,
+        tagIds: parsed.data.tagIds,
+        coverImageUrl: parsed.data.coverImageUrl,
+        galleryUrls: parsed.data.galleryUrls,
       };
 
       if (isEdit) {
@@ -80,13 +114,16 @@ export function DestinationForm({
         );
       }
 
-      return createDestination({ ...payload, slug: form.slug });
+      return createDestination({ ...payload, slug: parsed.data.slug });
     },
     onSuccess: () => {
       push({
         title: isEdit
           ? "Destination updated"
           : "Destination created",
+        description: isEdit
+          ? "Destination details updated successfully."
+          : "Destination created successfully.",
         variant: "success",
       });
 
@@ -96,9 +133,9 @@ export function DestinationForm({
 
       router.push("/destinations");
     },
-    onError: (err: any) => {
+    onError: (err: unknown) => {
       push({
-        title: "Error",
+        title: "Save failed",
         description: formatApiError(err),
         variant: "error",
       });

@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plan } from "@/types/api";
 import Image from "next/image";
+import { z } from "zod";
+import { formatApiError } from "@/lib/utils";
 
 export function CreateTenantForm() {
   const router = useRouter();
@@ -32,26 +34,43 @@ export function CreateTenantForm() {
     queryFn: getPlans,
   });
 
+  const tenantSchema = z.object({
+    tenantName: z.string().min(2, "Tenant name is required"),
+    slug: z
+      .string()
+      .min(2, "Slug is required")
+      .regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens"),
+    adminName: z.string().min(2, "Admin name is required"),
+    adminEmail: z.string().email("Enter a valid admin email"),
+    adminPassword: z.string().min(6, "Admin password must be at least 6 characters"),
+    planId: z.string().min(1, "Please select a plan"),
+    logo: z.string().optional(),
+    color: z.string().optional(),
+  });
+
   const mutation = useMutation({
     mutationFn: async () => {
+      const parsed = tenantSchema.safeParse(form);
+      if (!parsed.success) {
+        throw new Error(parsed.error.issues[0]?.message ?? "Invalid form data");
+      }
+
       // 1️⃣ Create tenant + admin
       const result = await createTenant({
-        tenantName: form.tenantName,
-        slug: form.slug,
-        adminName: form.adminName,
-        adminEmail: form.adminEmail,
-        adminPassword: form.adminPassword,
-        logo: form.logo,
-        color: form.color,
+        tenantName: parsed.data.tenantName,
+        slug: parsed.data.slug,
+        adminName: parsed.data.adminName,
+        adminEmail: parsed.data.adminEmail,
+        adminPassword: parsed.data.adminPassword,
+        logo: parsed.data.logo,
+        color: parsed.data.color,
       });
 
       // 2️⃣ Assign subscription
-      if (form.planId) {
-        await assignSubscription({
-          tenantId: result.tenant.id,
-          planId: form.planId,
-        });
-      }
+      await assignSubscription({
+        tenantId: result.tenant.id,
+        planId: parsed.data.planId,
+      });
 
       return result;
     },
@@ -65,10 +84,10 @@ export function CreateTenantForm() {
       router.push("/tenants");
       router.refresh();
     },
-    onError: () => {
+    onError: (err: unknown) => {
       push({
         title: "Creation failed",
-        description: "Could not create tenant",
+        description: formatApiError(err),
         variant: "error",
       });
     },
@@ -264,7 +283,20 @@ export function CreateTenantForm() {
         <Button
           disabled={mutation.isPending}
           className="rounded-lg px-8"
-          onClick={() => mutation.mutate()}
+          onClick={() => {
+            const parsed = tenantSchema.safeParse(form);
+            if (!parsed.success) {
+              push({
+                title: "Validation failed",
+                description:
+                  parsed.error.issues[0]?.message ??
+                  "Please fix the highlighted form errors.",
+                variant: "error",
+              });
+              return;
+            }
+            mutation.mutate();
+          }}
         >
           {mutation.isPending ? "Creating..." : "Create Tenant"}
         </Button>

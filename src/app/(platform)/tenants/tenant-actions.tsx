@@ -5,6 +5,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateTenantStatus } from "@/lib/tenants-api";
 import { useRouter } from "next/navigation";
 import { TenantDetails } from "@/types/api";
+import { useToast } from "@/components/ui/toast";
+import { formatApiError } from "@/lib/utils";
 
 export function TenantActions({
   tenant,
@@ -13,6 +15,7 @@ export function TenantActions({
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { push } = useToast();
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -25,6 +28,18 @@ export function TenantActions({
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["tenants"],
+      });
+      push({
+        title: "Tenant status updated",
+        description: `${tenant.name} is now ${tenant.status === "ACTIVE" ? "suspended" : "active"}.`,
+        variant: "success",
+      });
+    },
+    onError: (err: unknown) => {
+      push({
+        title: "Status update failed",
+        description: formatApiError(err),
+        variant: "error",
       });
     },
   });
