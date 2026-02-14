@@ -1,4 +1,6 @@
 import { DestinationsTable } from "./destinations-table";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function DestinationsPage() {
   return (
@@ -13,12 +15,9 @@ export default function DestinationsPage() {
           </p>
         </div>
 
-        <a
-          href="/destinations/new"
-          className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm"
-        >
-          Add Destination
-        </a>
+        <Button asChild>
+          <Link href="/destinations/new">Add Destination</Link>
+        </Button>
       </div>
 
       <DestinationsTable />

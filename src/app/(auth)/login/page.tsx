@@ -13,6 +13,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useQueryClient } from "@tanstack/react-query";
 import { Spinner } from "@/components/ui/spinner";
 import { useToast } from "@/components/ui/toast";
+import Link from "next/link";
+import axios from "axios";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -49,9 +51,10 @@ export default function LoginPage() {
       } else {
         router.push("/tenant-dashboard");
       }
-    } catch (err: any) {
-      const message =
-        err?.response?.data?.message || "Login failed";
+    } catch (err: unknown) {
+      const message = axios.isAxiosError(err)
+        ? (err.response?.data?.message as string) || "Login failed"
+        : "Login failed";
       setError(message);
       push({
         variant: "error",
@@ -166,12 +169,12 @@ export default function LoginPage() {
                 </form>
 
                 <div className="text-center text-xs text-slate-500">
-                  <a
+                  <Link
                     href="/forgot-password"
                     className="text-slate-900 underline-offset-4 hover:underline"
                   >
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
               </CardContent>
             </Card>

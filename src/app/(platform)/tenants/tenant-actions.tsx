@@ -4,8 +4,13 @@ import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateTenantStatus } from "@/lib/tenants-api";
 import { useRouter } from "next/navigation";
+import { TenantDetails } from "@/types/api";
 
-export function TenantActions({ tenant }: { tenant: any }) {
+export function TenantActions({
+  tenant,
+}: {
+  tenant: TenantDetails;
+}) {
   const router = useRouter();
   const queryClient = useQueryClient();
 

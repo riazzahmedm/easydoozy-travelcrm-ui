@@ -11,6 +11,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { useToast } from "@/components/ui/toast";
 import { useState } from "react";
 import { forgotPassword } from "@/lib/auth-api";
+import Link from "next/link";
+import axios from "axios";
 
 export default function ForgotPasswordPage() {
   const { push } = useToast();
@@ -32,9 +34,10 @@ export default function ForgotPasswordPage() {
         description: "If the account exists, a reset link has been sent.",
       });
       form.reset();
-    } catch (err: any) {
-      const message =
-        err?.response?.data?.message || "Request failed";
+    } catch (err: unknown) {
+      const message = axios.isAxiosError(err)
+        ? (err.response?.data?.message as string) || "Request failed"
+        : "Request failed";
       setError(message);
       push({
         variant: "error",
@@ -121,12 +124,12 @@ export default function ForgotPasswordPage() {
                 </form>
 
                 <div className="text-center text-xs text-slate-500">
-                  <a
+                  <Link
                     href="/login"
                     className="text-slate-900 underline-offset-4 hover:underline"
                   >
                     Back to login
-                  </a>
+                  </Link>
                 </div>
               </CardContent>
             </Card>

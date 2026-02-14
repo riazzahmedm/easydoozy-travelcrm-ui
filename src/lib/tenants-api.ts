@@ -1,7 +1,12 @@
 import { api } from "./api";
+import {
+  CreateTenantPayload,
+  CreateTenantResponse,
+  TenantDetails,
+} from "@/types/api";
 
 export async function getTenants() {
-  const res = await api.get("/tenants");
+  const res = await api.get<TenantDetails[]>("/tenants");
   return res.data;
 }
 
@@ -15,8 +20,11 @@ export async function updateTenantStatus(
   return res.data;
 }
 
-export async function createTenant(payload: any) {
-  const res = await api.post("/tenants", payload);
+export async function createTenant(payload: CreateTenantPayload) {
+  const res = await api.post<CreateTenantResponse>(
+    "/tenants",
+    payload
+  );
   return res.data;
 }
 
@@ -29,6 +37,6 @@ export async function updateTenant(
     color?: string;
   }
 ) {
-  const res = await api.patch(`/tenants/${id}`, payload);
+  const res = await api.patch<TenantDetails>(`/tenants/${id}`, payload);
   return res.data;
 }

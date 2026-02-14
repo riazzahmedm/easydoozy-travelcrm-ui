@@ -7,8 +7,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
+import { Plan, TenantDetails } from "@/types/api";
 
-export function TenantPlan({ tenant }: any) {
+export function TenantPlan({ tenant }: { tenant: TenantDetails }) {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
@@ -96,7 +97,7 @@ export function TenantPlan({ tenant }: any) {
             </h4>
 
             <div className="space-y-2">
-              {plans?.map((plan: any) => {
+              {plans?.map((plan: Plan) => {
                 const isCurrent =
                   plan.id === currentPlanId;
 

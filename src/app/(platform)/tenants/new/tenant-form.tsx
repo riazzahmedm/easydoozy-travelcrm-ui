@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Plan } from "@/types/api";
 
 export function CreateTenantForm() {
   const router = useRouter();
@@ -231,7 +232,7 @@ export function CreateTenantForm() {
               }
             >
               <option value="">Select Plan</option>
-              {plans?.map((plan: any) => (
+              {plans?.map((plan: Plan) => (
                 <option key={plan.id} value={plan.id}>
                   {plan.name}
                 </option>

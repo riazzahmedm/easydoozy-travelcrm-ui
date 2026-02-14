@@ -1,4 +1,6 @@
 import { PackagesTable } from "./packages-table";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function PackagesPage() {
   return (
@@ -13,12 +15,9 @@ export default function PackagesPage() {
           </p>
         </div>
 
-        <a
-          href="/packages/new"
-          className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm"
-        >
-          Add Package
-        </a>
+        <Button asChild>
+          <Link href="/packages/new">Add Package</Link>
+        </Button>
       </div>
 
       <PackagesTable />

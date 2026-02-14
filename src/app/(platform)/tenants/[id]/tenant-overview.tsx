@@ -6,8 +6,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateTenantStatus } from "@/lib/tenants-api";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
+import { TenantDetails } from "@/types/api";
 
-export function TenantOverview({ tenant }: any) {
+export function TenantOverview({ tenant }: { tenant: TenantDetails }) {
   const queryClient = useQueryClient();
   const router = useRouter();
   const { push } = useToast();

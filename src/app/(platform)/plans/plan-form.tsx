@@ -9,6 +9,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPlan, updatePlan } from "@/lib/plans-api";
 import { useToast } from "@/components/ui/toast";
 import { formatApiError } from "@/lib/utils";
+import { Plan } from "@/types/api";
 
 type PlanFormValues = {
   name: string;
@@ -25,7 +26,7 @@ type PlanFormValues = {
 export function PlanForm({
   initialData,
 }: {
-  initialData?: any;
+  initialData?: Plan;
 }) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -65,16 +66,39 @@ export function PlanForm({
         title: initialData ? "Plan updated" : "Plan created",
       });
       router.push("/plans");
-    } catch (err: any) {
-      const message =
-        err?.response?.data?.message || "Something went wrong";
+    } catch (err: unknown) {
       push({
         variant: "error",
         title: "Save failed",
-        description: formatApiError(message),
+        description: formatApiError(err),
       });
     }
   };
+
+  const limitFields: Array<{
+    label: string;
+    field:
+      | "limits.maxAgents"
+      | "limits.maxDestinations"
+      | "limits.maxPackages";
+    description: string;
+  }> = [
+    {
+      label: "Max Agents",
+      field: "limits.maxAgents",
+      description: "Number of agent accounts allowed",
+    },
+    {
+      label: "Max Destinations",
+      field: "limits.maxDestinations",
+      description: "Total destinations allowed",
+    },
+    {
+      label: "Max Packages",
+      field: "limits.maxPackages",
+      description: "Total packages allowed",
+    },
+  ];
 
   return (
     <form
@@ -117,23 +141,7 @@ export function PlanForm({
         </h3>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {[
-            {
-              label: "Max Agents",
-              field: "limits.maxAgents",
-              description: "Number of agent accounts allowed",
-            },
-            {
-              label: "Max Destinations",
-              field: "limits.maxDestinations",
-              description: "Total destinations allowed",
-            },
-            {
-              label: "Max Packages",
-              field: "limits.maxPackages",
-              description: "Total packages allowed",
-            },
-          ].map((item) => (
+          {limitFields.map((item) => (
             <div
               key={item.label}
               className="rounded-2xl border bg-muted/20 p-5 space-y-3 transition hover:bg-muted/40"
@@ -150,7 +158,7 @@ export function PlanForm({
               <Input
                 type="number"
                 className="h-10 rounded-lg"
-                {...form.register(item.field as any, {
+                {...form.register(item.field, {
                   valueAsNumber: true,
                 })}
               />

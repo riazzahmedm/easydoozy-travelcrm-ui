@@ -12,6 +12,8 @@ import { useToast } from "@/components/ui/toast";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { resetPassword } from "@/lib/auth-api";
+import Link from "next/link";
+import axios from "axios";
 
 export default function ResetPasswordPage() {
   const { push } = useToast();
@@ -50,9 +52,10 @@ export default function ResetPasswordPage() {
         description: "You can now sign in with your new password.",
       });
       router.push("/login");
-    } catch (err: any) {
-      const message =
-        err?.response?.data?.message || "Reset failed";
+    } catch (err: unknown) {
+      const message = axios.isAxiosError(err)
+        ? (err.response?.data?.message as string) || "Reset failed"
+        : "Reset failed";
       setError(message);
       push({
         variant: "error",
@@ -153,12 +156,12 @@ export default function ResetPasswordPage() {
                 </form>
 
                 <div className="text-center text-xs text-slate-500">
-                  <a
+                  <Link
                     href="/login"
                     className="text-slate-900 underline-offset-4 hover:underline"
                   >
                     Back to login
-                  </a>
+                  </Link>
                 </div>
               </CardContent>
             </Card>

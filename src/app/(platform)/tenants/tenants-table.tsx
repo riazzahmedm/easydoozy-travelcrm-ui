@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getTenants } from "@/lib/tenants-api";
 import { TenantStatusBadge } from "./tenant-status-badge";
 import { TenantActions } from "./tenant-actions";
+import { TenantDetails } from "@/types/api";
 
 export function TenantsTable() {
   const { data, isLoading } = useQuery({
@@ -43,7 +44,7 @@ export function TenantsTable() {
         </thead>
 
         <tbody>
-          {data.map((tenant: any) => {
+          {data.map((tenant: TenantDetails) => {
             const isPlatform = tenant.slug === "platform";
 
             return (

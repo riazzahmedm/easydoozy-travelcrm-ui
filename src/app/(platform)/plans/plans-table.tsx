@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getPlans } from "@/lib/plans-api";
 import { PlanActions } from "./plan-actions";
 import { Badge } from "@/components/ui/badge";
+import { Plan } from "@/types/api";
 
 export function PlansTable() {
   const { data, isLoading } = useQuery({
@@ -42,7 +43,7 @@ export function PlansTable() {
         </thead>
 
         <tbody>
-          {data?.map((plan: any) => (
+          {data?.map((plan: Plan) => (
             <tr key={plan.id} className="border-t">
               <td className="p-3 font-medium">{plan.name}</td>
               <td className="p-3">{plan.limits?.maxDestinations}</td>

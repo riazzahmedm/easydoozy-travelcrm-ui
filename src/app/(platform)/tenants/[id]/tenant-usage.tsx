@@ -1,7 +1,8 @@
 "use client";
+import { PlanLimits, TenantDetails } from "@/types/api";
 
-export function TenantUsage({ tenant }: any) {
-  const limits = tenant.subscription?.plan?.limits;
+export function TenantUsage({ tenant }: { tenant: TenantDetails }) {
+  const limits = tenant.subscription?.plan?.limits as PlanLimits | undefined;
 
   if (!limits) {
     return (

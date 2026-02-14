@@ -3,13 +3,12 @@
 import { togglePlanStatus } from "@/lib/plans-api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
-import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Plan } from "@/types/api";
 
-export function PlanActions({ plan }: { plan: any }) {
+export function PlanActions({ plan }: { plan: Plan }) {
   const queryClient = useQueryClient();
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);

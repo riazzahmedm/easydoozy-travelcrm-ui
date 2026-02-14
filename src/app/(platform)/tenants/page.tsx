@@ -1,4 +1,6 @@
 import { TenantsTable } from "./tenants-table";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function TenantsPage() {
   return (
@@ -11,12 +13,9 @@ export default function TenantsPage() {
           </p>
         </div>
 
-        <a
-          href="/tenants/new"
-          className="bg-primary text-primary-foreground px-4 py-2 rounded text-sm"
-        >
-          Create Tenant
-        </a>
+        <Button asChild>
+          <Link href="/tenants/new">Create Tenant</Link>
+        </Button>
       </div>
 
       <TenantsTable />
