@@ -23,10 +23,10 @@ export default function BookingsPage() {
             Manage customer bookings
           </p>
         </div>
-
+{/* 
         <Button asChild>
           <Link href="/bookings/new">Add Bookings</Link>
-        </Button>
+        </Button> */}
       </div>
 
       <BookingsTable />
