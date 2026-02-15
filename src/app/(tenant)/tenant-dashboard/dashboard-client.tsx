@@ -6,8 +6,22 @@ import { Card } from "@/components/ui/card";
 import { UsageBar } from "./usage-bar";
 import { useAuth } from "@/hooks/useAuth";
 
+type DashboardStats = {
+  agents: number;
+  destinations: number;
+  packages: number;
+  draftPackages: number;
+  publishedPackages: number;
+  leads: number;
+  newLeads: number;
+  contactedLeads: number;
+  qualifiedLeads: number;
+  wonLeads: number;
+  lostLeads: number;
+};
+
 export function DashboardClient() {
-   const { user } = useAuth();
+  const { user } = useAuth();
   const { data, isLoading } = useQuery({
     queryKey: ["tenant-dashboard"],
     queryFn: getTenantDashboard,
@@ -17,7 +31,11 @@ export function DashboardClient() {
     return <div className="p-6">Loading dashboard...</div>;
   }
 
-  const stats = data?.stats;
+  if (!data?.stats) {
+    return <div className="p-6">Unable to load dashboard.</div>;
+  }
+
+  const stats = data?.stats as DashboardStats;
   const subscription = data?.subscription;
 
   const limits = subscription?.plan?.limits ?? {};
@@ -30,6 +48,7 @@ export function DashboardClient() {
         {user?.role !== "AGENT" && <StatCard title="Agents" value={stats.agents} />}
         <StatCard title="Destinations" value={stats.destinations} />
         <StatCard title="Packages" value={stats.packages} />
+        <StatCard title="Leads" value={stats.leads} />
         <StatCard title="Published" value={stats.publishedPackages} />
       </div>
 
@@ -90,6 +109,40 @@ export function DashboardClient() {
             title="Published"
             value={stats.publishedPackages}
             color="bg-emerald-100 text-emerald-800"
+          />
+        </div>
+      </Card>
+
+      <Card className="p-6 bg-white">
+        <h2 className="text-lg font-semibold mb-4">
+          Lead Status
+        </h2>
+
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <StatusBox
+            title="New"
+            value={stats.newLeads}
+            color="bg-blue-100 text-blue-800"
+          />
+          <StatusBox
+            title="Contacted"
+            value={stats.contactedLeads}
+            color="bg-violet-100 text-violet-800"
+          />
+          <StatusBox
+            title="Qualified"
+            value={stats.qualifiedLeads}
+            color="bg-amber-100 text-amber-800"
+          />
+          <StatusBox
+            title="Won"
+            value={stats.wonLeads}
+            color="bg-emerald-100 text-emerald-800"
+          />
+          <StatusBox
+            title="Lost"
+            value={stats.lostLeads}
+            color="bg-rose-100 text-rose-800"
           />
         </div>
       </Card>
