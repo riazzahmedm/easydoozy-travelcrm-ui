@@ -81,6 +81,9 @@ export function BookingActions({ booking }: Props) {
         variant: "success",
       });
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
+      queryClient.invalidateQueries({
+        queryKey: ["booking-audit-logs", booking.id],
+      });
       router.refresh();
       setOpen(false);
     },
@@ -103,6 +106,9 @@ export function BookingActions({ booking }: Props) {
         variant: "success",
       });
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
+      queryClient.invalidateQueries({
+        queryKey: ["booking-audit-logs", booking.id],
+      });
       router.refresh();
       setOpen(false);
     },

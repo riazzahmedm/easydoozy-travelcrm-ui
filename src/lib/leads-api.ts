@@ -53,3 +53,8 @@ export async function convertLeadToBooking(
 
   return res.data;
 }
+
+export async function getLeadAuditLogs(leadId: string) {
+  const res = await api.get(`/leads/${leadId}/logs`);
+  return res.data;
+}

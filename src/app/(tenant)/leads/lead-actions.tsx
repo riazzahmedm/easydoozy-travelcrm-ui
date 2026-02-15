@@ -24,6 +24,9 @@ export function LeadActions({ lead }: { lead: LeadRow }) {
       queryClient.invalidateQueries({
         queryKey: ["leads"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["lead-audit-logs", lead.id],
+      });
     },
     onError: (err: unknown) => {
       push({

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerBookingById } from "@/lib/server-bookings-api";
 import { BookingActions } from "./booking-actions";
+import { BookingAuditLogs } from "./booking-audit-logs";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -173,7 +174,7 @@ export default async function BookingDetailsPage({ params }: Props) {
         </section>
       </div>
 
-
+      <BookingAuditLogs bookingId={booking.id} />
     </div>
   );
 }

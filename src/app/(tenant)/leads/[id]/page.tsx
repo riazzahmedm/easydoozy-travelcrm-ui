@@ -1,6 +1,7 @@
 import { getServerLeadById } from "@/lib/server-leads-api";
 import { redirect } from "next/navigation";
 import { LeadForm } from "../lead-form";
+import { LeadAuditLogs } from "../lead-audit-logs";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -27,6 +28,8 @@ export default async function EditLeadPage({ params }: Props) {
         mode="edit"
         initialData={lead}
       />
+
+      <LeadAuditLogs leadId={lead.id} />
     </div>
   );
 }

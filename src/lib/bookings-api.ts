@@ -38,3 +38,8 @@ export async function updateBookingStatus(
   const res = await api.patch(`/bookings/${id}/status`, { status });
   return res.data;
 }
+
+export async function getBookingAuditLogs(id: string) {
+  const res = await api.get(`/bookings/${id}/logs`);
+  return res.data;
+}
