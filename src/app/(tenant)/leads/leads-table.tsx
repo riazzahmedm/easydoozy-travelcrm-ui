@@ -6,8 +6,8 @@ import { getLeads, LeadStatus } from "@/lib/leads-api";
 import { LeadStatusBadge } from "./lead-status-badge";
 import { LeadActions } from "./lead-actions";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 import { ConvertBookingModal } from "@/components/leads/convert-booking-modal";
+import Link from "next/link";
 
 type LeadRow = {
   id: string;
@@ -23,7 +23,6 @@ type LeadRow = {
 };
 
 export function LeadsTable() {
-  const router = useRouter();
   const [selectedLead, setSelectedLead] = useState<LeadRow | null>(null);
   const { data, isLoading } = useQuery({
     queryKey: ["leads"],
@@ -74,15 +73,11 @@ export function LeadsTable() {
               <td className="p-3">{lead.assignedTo?.name ?? "-"}</td>
               <td className="p-3 text-right flex justify-end gap-2">
                 <Button
+                  asChild
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    router.push(
-                      `/leads/${lead.id}`
-                    )
-                  }
                 >
-                  Edit
+                  <Link href={`/leads/${lead.id}`}>Edit</Link>
                 </Button>
                 {lead.status !== "WON" && (
                   <Button

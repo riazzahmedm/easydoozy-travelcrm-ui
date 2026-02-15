@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getServerBookingById } from "@/lib/server-bookings-api";
+import { BookingActions } from "./booking-actions";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -49,7 +50,19 @@ export default async function BookingDetailsPage({ params }: Props) {
           </p>
         </div>
 
-        <StatusBadge status={booking.status} />
+        <div className="flex items-center gap-2">
+          <StatusBadge status={booking.status} />
+          <BookingActions
+            booking={{
+              id: booking.id,
+              status: booking.status,
+              totalAmount: booking.totalAmount,
+              paidAmount: booking.paidAmount,
+              travelDate: booking.travelDate,
+              travelers: booking.travelers,
+            }}
+          />
+        </div>
       </div>
 
       {/* PAYMENT SUMMARY */}
@@ -71,9 +84,8 @@ export default async function BookingDetailsPage({ params }: Props) {
         <div className="rounded-2xl border bg-white p-6 shadow-sm">
           <div className="text-xs text-muted-foreground">Due Amount</div>
           <div
-            className={`text-xl font-semibold mt-1 ${
-              due > 0 ? "text-rose-600" : "text-emerald-600"
-            }`}
+            className={`text-xl font-semibold mt-1 ${due > 0 ? "text-rose-600" : "text-emerald-600"
+              }`}
           >
             {formatCurrency(due)}
           </div>
@@ -160,6 +172,8 @@ export default async function BookingDetailsPage({ params }: Props) {
           </div>
         </section>
       </div>
+
+
     </div>
   );
 }
