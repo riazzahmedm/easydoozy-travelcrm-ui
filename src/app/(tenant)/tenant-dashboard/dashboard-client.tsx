@@ -18,7 +18,19 @@ type DashboardStats = {
   qualifiedLeads: number;
   wonLeads: number;
   lostLeads: number;
+  totalBookings: number;
+  confirmedBookings: number;
+  partialPaidBookings: number;
+  fullyPaidBookings: number;
+  cancelledBookings: number;
+  bookingTotalAmount: number;
+  bookingPaidAmount: number;
+  bookingDueAmount: number;
 };
+
+function formatCurrency(amount: number) {
+  return `₹${Number(amount).toLocaleString("en-IN")}`;
+}
 
 export function DashboardClient() {
   const { user } = useAuth();
@@ -45,10 +57,11 @@ export function DashboardClient() {
 
       {/* TOP STATS */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <StatCard title="Leads" value={stats.leads} />
+        <StatCard title="Bookings" value={stats.totalBookings} />
         {user?.role !== "AGENT" && <StatCard title="Agents" value={stats.agents} />}
         <StatCard title="Destinations" value={stats.destinations} />
         <StatCard title="Packages" value={stats.packages} />
-        <StatCard title="Leads" value={stats.leads} />
         <StatCard title="Published" value={stats.publishedPackages} />
       </div>
 
@@ -146,11 +159,57 @@ export function DashboardClient() {
           />
         </div>
       </Card>
+
+      <Card className="p-6 bg-white">
+        <h2 className="text-lg font-semibold mb-4">
+          Booking Status
+        </h2>
+
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <StatusBox
+            title="Confirmed"
+            value={stats.confirmedBookings}
+            color="bg-blue-100 text-blue-800"
+          />
+          <StatusBox
+            title="Partial"
+            value={stats.partialPaidBookings}
+            color="bg-amber-100 text-amber-800"
+          />
+          <StatusBox
+            title="Fully Paid"
+            value={stats.fullyPaidBookings}
+            color="bg-emerald-100 text-emerald-800"
+          />
+          <StatusBox
+            title="Cancelled"
+            value={stats.cancelledBookings}
+            color="bg-rose-100 text-rose-800"
+          />
+          <StatusBox
+            title="Total"
+            value={stats.totalBookings}
+            color="bg-slate-100 text-slate-800"
+          />
+        </div>
+      </Card>
+
+      <Card className="p-6 bg-white">
+        <h2 className="text-lg font-semibold mb-4">
+          Booking Payment Summary
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <StatCard title="Total Amount" value={formatCurrency(stats.bookingTotalAmount)} />
+          <StatCard title="Collected" value={formatCurrency(stats.bookingPaidAmount)} />
+          <StatCard title="Outstanding" value={formatCurrency(stats.bookingDueAmount)} />
+        </div>
+      </Card>
     </div>
   );
 }
 
-function StatCard({ title, value }: any) {
+function StatCard({ title, value }: { title: string; value: string | number }) {
   return (
     <Card className="p-6 bg-white">
       <div className="text-sm text-muted-foreground">
@@ -163,7 +222,15 @@ function StatCard({ title, value }: any) {
   );
 }
 
-function StatusBox({ title, value, color }: any) {
+function StatusBox({
+  title,
+  value,
+  color,
+}: {
+  title: string;
+  value: number;
+  color: string;
+}) {
   return (
     <div className={`rounded-xl p-6 ${color}`}>
       <div className="text-sm">{title}</div>

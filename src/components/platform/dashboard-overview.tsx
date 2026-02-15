@@ -9,6 +9,7 @@ type OverviewData = {
   totalPackages: number;
   publishedPackages: number;
   totalLeads: number;
+  totalBookings: number;
 };
 
 export function DashboardOverview({ data }: { data: OverviewData }) {
@@ -18,9 +19,10 @@ export function DashboardOverview({ data }: { data: OverviewData }) {
     { label: "Suspended Tenants", value: data.suspendedTenants },
     { label: "Agents", value: data.totalAgents },
     { label: "Leads", value: data.totalLeads },
+    { label: "Bookings", value: data.totalBookings },
     { label: "Destinations", value: data.totalDestinations },
     { label: "Packages", value: data.totalPackages },
-    { label: "Published Packages", value: data.publishedPackages },
+    // { label: "Published Packages", value: data.publishedPackages },
   ];
 
   return (
