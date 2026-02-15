@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getLeads, LeadStatus } from "@/lib/leads-api";
 import { LeadStatusBadge } from "./lead-status-badge";
 import { LeadActions } from "./lead-actions";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { ConvertBookingModal } from "@/components/leads/convert-booking-modal";
 
 type LeadRow = {
   id: string;
@@ -13,6 +15,8 @@ type LeadRow = {
   phone?: string | null;
   budget?: number | null;
   status: LeadStatus;
+  packageId?: string | null;
+  destinationId?: string | null;
   assignedTo?: {
     name?: string | null;
   } | null;
@@ -20,6 +24,7 @@ type LeadRow = {
 
 export function LeadsTable() {
   const router = useRouter();
+  const [selectedLead, setSelectedLead] = useState<LeadRow | null>(null);
   const { data, isLoading } = useQuery({
     queryKey: ["leads"],
     queryFn: getLeads,
@@ -69,22 +74,39 @@ export function LeadsTable() {
               <td className="p-3">{lead.assignedTo?.name ?? "-"}</td>
               <td className="p-3 text-right flex justify-end gap-2">
                 <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    router.push(
+                      `/leads/${lead.id}`
+                    )
+                  }
+                >
+                  Edit
+                </Button>
+                {lead.status !== "WON" && (
+                  <Button
                     variant="outline"
                     size="sm"
-                    onClick={() =>
-                      router.push(
-                        `/leads/${lead.id}`
-                      )
-                    }
+                    onClick={() => setSelectedLead(lead)}
                   >
-                    Edit
+                    Convert
                   </Button>
+                )}
                 <LeadActions lead={{ id: lead.id, status: lead.status }} />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      <ConvertBookingModal
+        open={!!selectedLead}
+        onClose={() => setSelectedLead(null)}
+        leadId={selectedLead?.id ?? ""}
+        defaultPackageId={selectedLead?.packageId ?? undefined}
+        defaultDestinationId={selectedLead?.destinationId ?? undefined}
+      />
     </div>
   );
 }

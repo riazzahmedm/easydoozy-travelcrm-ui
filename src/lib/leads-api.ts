@@ -40,7 +40,8 @@ export async function updateLeadStatus(id: string, status: LeadStatus) {
 export async function convertLeadToBooking(
   leadId: string,
   payload: {
-    packageId: string;
+    packageId?: string;
+    destinationId?: string;
     totalAmount: number;
     paidAmount: number;
   }
