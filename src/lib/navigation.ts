@@ -15,6 +15,7 @@ export const NAVIGATION: Record<UserRole, NavItem[]> = {
   TENANT_ADMIN: [
     { label: "Dashboard", href: "/tenant-dashboard" },
     { label: "Leads", href: "/leads" },
+    { label: "Bookings", href: "/bookings" },
     { label: "Agents", href: "/agents" },
     { label: "Destinations", href: "/destinations" },
     { label: "Packages", href: "/packages" },

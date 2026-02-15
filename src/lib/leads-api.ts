@@ -36,3 +36,19 @@ export async function updateLeadStatus(id: string, status: LeadStatus) {
   const res = await api.patch(`/leads/${id}/status`, { status });
   return res.data;
 }
+
+export async function convertLeadToBooking(
+  leadId: string,
+  payload: {
+    packageId: string;
+    totalAmount: number;
+    paidAmount: number;
+  }
+) {
+  const res = await api.post(
+    `/leads/${leadId}/convert`,
+    payload
+  );
+
+  return res.data;
+}
