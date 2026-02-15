@@ -1,19 +1,97 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createLead, updateLead } from "@/lib/leads-api";
+import { createLead, LeadPayload, updateLead } from "@/lib/leads-api";
 import { getAgents } from "@/lib/agents-api";
 import { getDestinations } from "@/lib/destinations-api";
 import { getPackages } from "@/lib/packages-api";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { formatApiError } from "@/lib/utils";
+
+type LeadStatus = "NEW" | "CONTACTED" | "QUALIFIED" | "WON" | "LOST";
+
+type LeadDetails = {
+  id: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  travelDate?: string | null;
+  travelers?: number | null;
+  budget?: number | null;
+  source?: string | null;
+  notes?: string | null;
+  status?: LeadStatus | null;
+  assignedToId?: string | null;
+  destinationId?: string | null;
+  packageId?: string | null;
+};
+
+type LeadFormState = {
+  name: string;
+  email: string;
+  phone: string;
+  travelDate: string;
+  travelers: number;
+  budget: string;
+  source: string;
+  notes: string;
+  status: LeadStatus;
+  assignedToId: string;
+  destinationId: string;
+  packageId: string;
+};
+
+type OptionItem = {
+  id: string;
+  name: string;
+};
 
 interface Props {
   mode: "create" | "edit";
-  initialData?: any;
+  initialData?: LeadDetails;
+}
+
+function getInitialForm(initialData?: LeadDetails): LeadFormState {
+  if (!initialData) {
+    return {
+      name: "",
+      email: "",
+      phone: "",
+      travelDate: "",
+      travelers: 1,
+      budget: "",
+      source: "WEBSITE",
+      notes: "",
+      status: "NEW",
+      assignedToId: "",
+      destinationId: "",
+      packageId: "",
+    };
+  }
+
+  return {
+    name: initialData.name ?? "",
+    email: initialData.email ?? "",
+    phone: initialData.phone ?? "",
+    travelDate: initialData.travelDate
+      ? initialData.travelDate.split("T")[0]
+      : "",
+    travelers: initialData.travelers ?? 1,
+    budget:
+      typeof initialData.budget === "number"
+        ? String(initialData.budget)
+        : "",
+    source: initialData.source ?? "WEBSITE",
+    notes: initialData.notes ?? "",
+    status: initialData.status ?? "NEW",
+    assignedToId: initialData.assignedToId ?? "",
+    destinationId: initialData.destinationId ?? "",
+    packageId: initialData.packageId ?? "",
+  };
 }
 
 export function LeadForm({ mode, initialData }: Props) {
@@ -36,51 +114,62 @@ export function LeadForm({ mode, initialData }: Props) {
     queryFn: getPackages,
   });
 
-  const [form, setForm] = useState<any>({
-    name: "",
-    email: "",
-    phone: "",
-    travelDate: "",
-    travelers: 1,
-    budget: "",
-    source: "WEBSITE",
-    notes: "",
-    status: "NEW",
-    assignedToId: "",
-    destinationId: "",
-    packageId: "",
-  });
-
-  useEffect(() => {
-    if (initialData) {
-      setForm({
-        ...initialData,
-        travelDate: initialData.travelDate
-          ? initialData.travelDate.split("T")[0]
-          : "",
-      });
-    }
-  }, [initialData]);
+  const [form, setForm] = useState<LeadFormState>(
+    getInitialForm(initialData)
+  );
 
   const mutation = useMutation({
     mutationFn: () => {
-      const payload = {
-        ...form,
-        travelDate: form.travelDate
-          ? new Date(form.travelDate)
-          : null,
+      const name = form.name.trim();
+      const phone = form.phone.trim();
+      const travelDate = form.travelDate;
+      const budget = Number(form.budget);
+      const assignedToId = form.assignedToId;
+
+      if (!name) {
+        throw new Error("Full Name is required");
+      }
+      if (!phone) {
+        throw new Error("Phone is required");
+      }
+      if (!travelDate) {
+        throw new Error("Travel Date is required");
+      }
+      if (!form.budget || Number.isNaN(budget)) {
+        throw new Error("Budget is required");
+      }
+      if (!assignedToId) {
+        throw new Error("Assign To is required");
+      }
+
+      const payload: LeadPayload = {
+        name,
+        email: form.email.trim() || undefined,
+        phone,
+        travelDate,
+        travelers: Number.isFinite(form.travelers)
+          ? form.travelers
+          : undefined,
+        budget,
+        source: form.source || undefined,
+        notes: form.notes.trim() || undefined,
+        status: form.status,
+        assignedToId,
+        destinationId: form.destinationId || undefined,
+        packageId: form.packageId || undefined,
       };
 
       return mode === "edit"
-        ? updateLead(initialData.id, payload)
+        ? updateLead(initialData!.id, payload)
         : createLead(payload);
     },
     onSuccess: () => {
       push({
-        title:
+        title: mode === "edit" ? "Lead updated" : "Lead created",
+        description:
           mode === "edit"
-            ? "Lead updated"
-            : "Lead created",
+            ? "Lead details updated successfully."
+            : "Lead created successfully.",
         variant: "success",
       });
 
@@ -90,11 +179,10 @@ export function LeadForm({ mode, initialData }: Props) {
 
       router.push("/leads");
     },
-    onError: (err: any) => {
+    onError: (err: unknown) => {
       push({
-        title:
-          err?.response?.data?.message ||
-          "Something went wrong",
+        title: "Save failed",
+        description: formatApiError(err),
         variant: "error",
       });
     },
@@ -102,126 +190,91 @@ export function LeadForm({ mode, initialData }: Props) {
 
   return (
     <div className="max-w-3xl rounded-2xl border bg-white p-8 shadow-sm space-y-10">
-
-      {/* BASIC INFO */}
       <div className="space-y-6">
         <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Lead Information
         </h3>
 
         <div className="grid md:grid-cols-2 gap-6">
-
           <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Full Name *
-            </label>
+            <label className="text-sm font-medium">Full Name <span className="text-red-500">*</span></label>
             <Input
+              required
               value={form.name}
-              onChange={(e) =>
-                setForm({ ...form, name: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Email
-            </label>
+            <label className="text-sm font-medium">Email</label>
             <Input
               type="email"
               value={form.email}
-              onChange={(e) =>
-                setForm({ ...form, email: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Phone
-            </label>
+            <label className="text-sm font-medium">Phone <span className="text-red-500">*</span></label>
             <Input
+              required
               value={form.phone}
-              onChange={(e) =>
-                setForm({ ...form, phone: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Travel Date
-            </label>
+            <label className="text-sm font-medium">Travel Date <span className="text-red-500">*</span></label>
             <Input
+              required
               type="date"
               value={form.travelDate}
               onChange={(e) =>
-                setForm({
-                  ...form,
-                  travelDate: e.target.value,
-                })
+                setForm({ ...form, travelDate: e.target.value })
               }
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Travelers
-            </label>
+            <label className="text-sm font-medium">Travelers</label>
             <Input
               type="number"
               value={form.travelers}
               onChange={(e) =>
-                setForm({
-                  ...form,
-                  travelers: Number(e.target.value),
-                })
+                setForm({ ...form, travelers: Number(e.target.value) })
               }
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Budget
-            </label>
+            <label className="text-sm font-medium">Budget <span className="text-red-500">*</span></label>
             <Input
+              required
+              type="number"
               value={form.budget}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  budget: e.target.value,
-                })
-              }
+              onChange={(e) => setForm({ ...form, budget: e.target.value })}
             />
           </div>
-
         </div>
       </div>
 
-      {/* ASSIGNMENT */}
       <div className="space-y-6 border-t pt-8">
         <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Assignment & Source
         </h3>
 
         <div className="grid md:grid-cols-2 gap-6">
-
           <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Assign To
-            </label>
+            <label className="text-sm font-medium">Assign To <span className="text-red-500">*</span></label>
             <select
               className="w-full rounded-lg border px-3 py-2 text-sm"
-              value={form.assignedToId || ""}
+              value={form.assignedToId}
               onChange={(e) =>
-                setForm({
-                  ...form,
-                  assignedToId: e.target.value,
-                })
+                setForm({ ...form, assignedToId: e.target.value })
               }
             >
-              <option value="">Unassigned</option>
-              {agents?.map((a: any) => (
+              <option value="">Select agent</option>
+              {agents?.map((a: OptionItem) => (
                 <option key={a.id} value={a.id}>
                   {a.name}
                 </option>
@@ -230,18 +283,11 @@ export function LeadForm({ mode, initialData }: Props) {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Source
-            </label>
+            <label className="text-sm font-medium">Source</label>
             <select
               className="w-full rounded-lg border px-3 py-2 text-sm"
               value={form.source}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  source: e.target.value,
-                })
-              }
+              onChange={(e) => setForm({ ...form, source: e.target.value })}
             >
               <option value="WEBSITE">Website</option>
               <option value="WHATSAPP">WhatsApp</option>
@@ -250,34 +296,26 @@ export function LeadForm({ mode, initialData }: Props) {
               <option value="MANUAL">Manual Entry</option>
             </select>
           </div>
-
         </div>
       </div>
 
-      {/* LINKED INFO */}
       <div className="space-y-6 border-t pt-8">
         <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Related Travel Info
         </h3>
 
         <div className="grid md:grid-cols-2 gap-6">
-
           <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Destination
-            </label>
+            <label className="text-sm font-medium">Destination</label>
             <select
               className="w-full rounded-lg border px-3 py-2 text-sm"
-              value={form.destinationId || ""}
+              value={form.destinationId}
               onChange={(e) =>
-                setForm({
-                  ...form,
-                  destinationId: e.target.value,
-                })
+                setForm({ ...form, destinationId: e.target.value })
               }
             >
               <option value="">None</option>
-              {destinations?.map((d: any) => (
+              {destinations?.map((d: OptionItem) => (
                 <option key={d.id} value={d.id}>
                   {d.name}
                 </option>
@@ -286,61 +324,40 @@ export function LeadForm({ mode, initialData }: Props) {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Package
-            </label>
+            <label className="text-sm font-medium">Package</label>
             <select
               className="w-full rounded-lg border px-3 py-2 text-sm"
-              value={form.packageId || ""}
+              value={form.packageId}
               onChange={(e) =>
-                setForm({
-                  ...form,
-                  packageId: e.target.value,
-                })
+                setForm({ ...form, packageId: e.target.value })
               }
             >
               <option value="">None</option>
-              {packages?.map((p: any) => (
+              {packages?.map((p: OptionItem) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
                 </option>
               ))}
             </select>
           </div>
-
         </div>
       </div>
 
-      {/* NOTES */}
       <div className="space-y-2 border-t pt-8">
-        <label className="text-sm font-medium">
-          Notes
-        </label>
+        <label className="text-sm font-medium">Notes</label>
         <textarea
           className="w-full rounded-lg border px-3 py-2 text-sm min-h-[120px]"
           value={form.notes}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              notes: e.target.value,
-            })
-          }
+          onChange={(e) => setForm({ ...form, notes: e.target.value })}
         />
       </div>
 
-      {/* ACTIONS */}
       <div className="flex justify-end gap-3 border-t pt-8">
-        <Button
-          variant="outline"
-          onClick={() => router.push("/leads")}
-        >
+        <Button variant="outline" onClick={() => router.push("/leads")}>
           Cancel
         </Button>
 
-        <Button
-          disabled={mutation.isPending}
-          onClick={() => mutation.mutate()}
-        >
+        <Button disabled={mutation.isPending} onClick={() => mutation.mutate()}>
           {mutation.isPending
             ? "Saving..."
             : mode === "edit"

@@ -3,11 +3,12 @@ import { redirect } from "next/navigation";
 import { LeadForm } from "../lead-form";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function EditLeadPage({ params }: Props) {
-  const lead = await getServerLeadById(params.id);
+  const { id } = await params;
+  const lead = await getServerLeadById(id);
 
   if (!lead) {
     redirect("/leads");
