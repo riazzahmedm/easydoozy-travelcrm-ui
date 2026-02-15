@@ -57,7 +57,7 @@ export function AgentsTable() {
   return (
     <div className="bg-white border rounded-xl overflow-hidden">
       <table className="w-full text-sm">
-        <thead>
+        <thead className="bg-muted/40">
           <tr>
             <th className="p-3 text-left">Name</th>
             <th className="p-3 text-left">Email</th>

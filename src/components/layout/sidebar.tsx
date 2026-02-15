@@ -7,6 +7,7 @@ import clsx from "clsx";
 import { AuthUser } from "@/lib/auth";
 import {
   Building2,
+  Contact,
   CreditCard,
   Layers,
   LayoutDashboard,
@@ -29,7 +30,8 @@ export function Sidebar({ user }: { user: AuthUser }) {
     "/destinations": MapPin,
     "/packages": Package,
     "/subscription": CreditCard,
-    "/tags": Tags
+    "/tags": Tags,
+    "/leads": Contact
   };
 
   return (

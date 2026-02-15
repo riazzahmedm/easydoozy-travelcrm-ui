@@ -52,7 +52,7 @@ export function PackagesTable() {
   return (
     <div className="bg-white border rounded overflow-hidden">
       <table className="w-full text-sm">
-        <thead>
+        <thead className="bg-muted/40">
           <tr>
             <th className="p-3 text-left">Name</th>
             <th className="p-3 text-left">Destination</th>

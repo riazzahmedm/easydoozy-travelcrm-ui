@@ -31,7 +31,7 @@ export function TenantsTable() {
   return (
     <div className="bg-white rounded border overflow-hidden">
       <table className="w-full text-sm">
-        <thead>
+        <thead className="bg-muted/40">
           <tr>
             <th className="p-3 text-left">Tenant</th>
             <th className="p-3 text-left">Plan</th>

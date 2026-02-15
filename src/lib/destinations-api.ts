@@ -10,6 +10,11 @@ export async function createDestination(payload: any) {
   return res.data;
 }
 
+export async function getPackagesByDestination(destinationId: string) {
+  const res = await api.get(`/packages/by-destination/${destinationId}`);
+  return res.data;
+}
+
 export async function updateDestination(
   id: string,
   payload: any

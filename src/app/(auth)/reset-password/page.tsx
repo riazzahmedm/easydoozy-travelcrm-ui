@@ -11,11 +11,20 @@ import { Spinner } from "@/components/ui/spinner";
 import { useToast } from "@/components/ui/toast";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { Suspense } from "react";
 import { resetPassword } from "@/lib/auth-api";
 import Link from "next/link";
 import axios from "axios";
 
 export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <ResetPasswordContent />
+    </Suspense>
+  );
+}
+
+function ResetPasswordContent() {
   const { push } = useToast();
   const searchParams = useSearchParams();
   const router = useRouter();
