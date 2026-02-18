@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createLead, LeadPayload, updateLead } from "@/lib/leads-api";
+import {
+  createLead,
+  LeadPayload,
+  searchLeadsByPhone,
+  updateLead,
+} from "@/lib/leads-api";
 import { getAgents } from "@/lib/agents-api";
 import { getDestinations } from "@/lib/destinations-api";
 import { getPackages } from "@/lib/packages-api";
@@ -48,6 +53,13 @@ type LeadFormState = {
 type OptionItem = {
   id: string;
   name: string;
+};
+
+type LeadPhoneMatch = {
+  id: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
 };
 
 interface Props {
@@ -116,6 +128,25 @@ export function LeadForm({ mode, initialData }: Props) {
 
   const [form, setForm] = useState<LeadFormState>(
     getInitialForm(initialData)
+  );
+
+  const { data: phoneMatches } = useQuery({
+    queryKey: ["lead-phone-search", form.phone],
+    queryFn: () => searchLeadsByPhone(form.phone),
+    enabled: form.phone.trim().length >= 3,
+  });
+
+  const applyMatchedLead = (lead: LeadPhoneMatch) => {
+    setForm((prev) => ({
+      ...prev,
+      name: prev.name || lead.name || "",
+      email: prev.email || lead.email || "",
+      phone: lead.phone || prev.phone,
+    }));
+  };
+
+  const exactMatch = (phoneMatches as LeadPhoneMatch[] | undefined)?.find(
+    (lead) => (lead.phone ?? "").trim() === form.phone.trim()
   );
 
   const mutation = useMutation({
@@ -220,7 +251,32 @@ export function LeadForm({ mode, initialData }: Props) {
               required
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              onBlur={() => {
+                if (exactMatch && (!form.name || !form.email)) {
+                  applyMatchedLead(exactMatch);
+                }
+              }}
             />
+            {!!(phoneMatches as LeadPhoneMatch[] | undefined)?.length && (
+              <div className="rounded-md border bg-muted/20 p-2 space-y-2">
+                <div className="text-xs text-muted-foreground">
+                  Matching leads in this tenant:
+                </div>
+                {(phoneMatches as LeadPhoneMatch[]).map((lead) => (
+                  <button
+                    key={lead.id}
+                    type="button"
+                    className="w-full rounded-md border bg-white px-3 py-2 text-left text-xs hover:bg-muted/40"
+                    onClick={() => applyMatchedLead(lead)}
+                  >
+                    <div className="font-medium">{lead.name}</div>
+                    <div className="text-muted-foreground">
+                      {lead.phone} {lead.email ? `• ${lead.email}` : ""}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">

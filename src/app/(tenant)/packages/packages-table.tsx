@@ -10,6 +10,14 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatApiError } from "@/lib/utils";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export function PackagesTable() {
   const router = useRouter();
@@ -50,24 +58,24 @@ export function PackagesTable() {
   if (isLoading) return <div>Loading packages...</div>;
 
   return (
-    <div className="bg-white border rounded overflow-hidden">
-      <table className="w-full text-sm">
-        <thead className="bg-muted/40">
-          <tr>
-            <th className="p-3 text-left">Name</th>
-            <th className="p-3 text-left">Destination</th>
-            <th className="p-3 text-left">Price</th>
-            <th className="p-3 text-left">Status</th>
-            <th className="p-4 text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
+    <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+      <Table className="text-sm">
+        <TableHeader className="bg-muted/40">
+          <TableRow>
+            <TableHead className="p-3 text-left font-semibold">Name</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Destination</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Price</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Status</TableHead>
+            <TableHead className="p-4 text-right font-semibold">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {data?.map((pkg: any) => (
-            <tr key={pkg.id} className="border-t">
-              <td className="p-3 font-medium">{pkg.name}</td>
-              <td className="p-3">{pkg.destination?.name}</td>
-              <td className="p-3">₹{pkg.priceFrom}</td>
-              <td className="p-3">
+            <TableRow key={pkg.id} className="border-t">
+              <TableCell className="p-3 font-medium">{pkg.name}</TableCell>
+              <TableCell className="p-3">{pkg.destination?.name}</TableCell>
+              <TableCell className="p-3">₹{pkg.priceFrom}</TableCell>
+              <TableCell className="p-3">
                 <Badge
                   className={
                     pkg.status === "PUBLISHED"
@@ -77,8 +85,9 @@ export function PackagesTable() {
                 >
                   {pkg.status}
                 </Badge>
-              </td>
-              <td className="p-3 text-right space-x-2">
+              </TableCell>
+              <TableCell className="p-3 text-right">
+                <div className="space-x-2">
                 <Button
                   size="sm"
                   variant="outline"
@@ -98,11 +107,12 @@ export function PackagesTable() {
                     Delete
                   </Button>
                 )}
-              </td>
-            </tr>
+                </div>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
 
       <ConfirmModal
         open={!!selectedId}

@@ -12,6 +12,14 @@ import { deleteDestination } from "@/lib/destinations-api";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatApiError } from "@/lib/utils";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type DestinationTag = {
   id: string;
@@ -81,30 +89,30 @@ export function DestinationsTable() {
 
   return (
     <>
-      <div className="bg-white border rounded overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/40">
-            <tr>
-              <th className="p-3 text-left">Name</th>
-              <th className="p-3 text-left">Location</th>
-              <th className="p-3 text-left">Tags</th>
-              <th className="p-3 text-left">Status</th>
-              <th className="p-4 text-right">Actions</th>
-            </tr>
-          </thead>
+      <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+        <Table className="text-sm">
+          <TableHeader className="bg-muted/40">
+            <TableRow>
+              <TableHead className="p-3 text-left font-semibold">Name</TableHead>
+              <TableHead className="p-3 text-left font-semibold">Location</TableHead>
+              <TableHead className="p-3 text-left font-semibold">Tags</TableHead>
+              <TableHead className="p-3 text-left font-semibold">Status</TableHead>
+              <TableHead className="p-4 text-right font-semibold">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
 
-          <tbody>
+          <TableBody>
             {data.map((item: DestinationItem) => (
-              <tr key={item.id} className="border-t">
-                <td className="p-3 font-medium">
+              <TableRow key={item.id} className="border-t">
+                <TableCell className="p-3 font-medium">
                   {item.name}
-                </td>
+                </TableCell>
 
-                <td className="p-3">
+                <TableCell className="p-3">
                   {item.city}, {item.country}
-                </td>
+                </TableCell>
 
-                <td className="p-3">
+                <TableCell className="p-3">
                   <div className="flex flex-wrap gap-1">
                     {item.tags?.map((tag: DestinationTag) => (
                       <Badge
@@ -115,13 +123,14 @@ export function DestinationsTable() {
                       </Badge>
                     ))}
                   </div>
-                </td>
+                </TableCell>
 
-                <td className="p-3">
+                <TableCell className="p-3">
                   <StatusBadge status={item.status} />
-                </td>
+                </TableCell>
 
-                <td className="p-3 text-right flex justify-end gap-2">
+                <TableCell className="p-3 text-right">
+                  <div className="flex justify-end gap-2">
                   <Button
                     variant="outline"
                     size="sm"
@@ -141,11 +150,12 @@ export function DestinationsTable() {
                     >
                       Delete
                     </Button>)}
-                </td>
-              </tr>
+                  </div>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
       <ConfirmModal
         open={!!selectedId}

@@ -22,6 +22,13 @@ export async function getLeads() {
   return res.data;
 }
 
+export async function searchLeadsByPhone(phone: string) {
+  const res = await api.get("/leads/search/phone", {
+    params: { phone },
+  });
+  return res.data;
+}
+
 export async function createLead(payload: LeadPayload) {
   const res = await api.post("/leads", payload);
   return res.data;

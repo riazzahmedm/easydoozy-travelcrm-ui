@@ -5,6 +5,14 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { getBookings } from "@/lib/bookings-api";
 import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 function formatCurrency(amount: number) {
   return `₹${Number(amount).toLocaleString("en-IN")}`;
@@ -65,71 +73,71 @@ export function BookingsTable() {
 
   return (
     <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-      <table className="w-full text-sm">
-        <thead className="bg-muted/40 text-muted-foreground">
-          <tr>
-            <th className="p-4 text-left">Customer</th>
-            <th className="p-4 text-left">Destination</th>
-            <th className="p-4 text-left">Package</th>
-            <th className="p-4 text-left">Total</th>
-            <th className="p-4 text-left">Paid</th>
-            <th className="p-4 text-left">Due</th>
-            <th className="p-4 text-left">Payment</th>
-            <th className="p-4 text-left">Status</th>
-            <th className="p-4 text-right">Actions</th>
-          </tr>
-        </thead>
+      <Table className="text-sm">
+        <TableHeader className="bg-muted/40">
+          <TableRow>
+            <TableHead className="p-3 text-left font-semibold">Customer</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Destination</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Package</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Total</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Paid</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Due</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Payment</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Status</TableHead>
+            <TableHead className="p-4 text-right font-semibold">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
 
-        <tbody>
+        <TableBody>
           {data.map((booking: any) => {
             const due =
               Number(booking.totalAmount) -
               Number(booking.paidAmount);
 
             return (
-              <tr
+              <TableRow
                 key={booking.id}
                 className="border-t hover:bg-muted/20 transition"
               >
-                <td className="p-4 font-medium">
+                <TableCell className="p-3 font-medium">
                   {booking.lead.name}
                   <div className="text-xs text-muted-foreground">
                     {booking.lead.email}
                   </div>
-                </td>
+                </TableCell>
 
-                <td className="p-4">
+                <TableCell className="p-3">
                   {booking.destination?.name ?? "-"}
-                </td>
+                </TableCell>
 
-                <td className="p-4">
+                <TableCell className="p-3">
                   {booking.package?.name ?? "-"}
-                </td>
+                </TableCell>
 
-                <td className="p-4">
+                <TableCell className="p-3">
                   {formatCurrency(booking.totalAmount)}
-                </td>
+                </TableCell>
 
-                <td className="p-4">
+                <TableCell className="p-3">
                   {formatCurrency(booking.paidAmount)}
-                </td>
+                </TableCell>
 
-                <td className="p-4 font-medium">
+                <TableCell className="p-3 font-medium">
                   {formatCurrency(due)}
-                </td>
+                </TableCell>
 
-                <td className="p-4">
+                <TableCell className="p-3">
                   <PaymentBadge
                     total={booking.totalAmount}
                     paid={booking.paidAmount}
                   />
-                </td>
+                </TableCell>
 
-                <td className="p-4">
+                <TableCell className="p-3">
                   <StatusBadge status={booking.status} />
-                </td>
+                </TableCell>
 
-                <td className="p-4 text-right">
+                <TableCell className="p-3 text-right">
                   <Button
                     size="sm"
                     variant="outline"
@@ -139,12 +147,12 @@ export function BookingsTable() {
                   >
                     View
                   </Button>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             );
           })}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

@@ -8,6 +8,14 @@ import { LeadActions } from "./lead-actions";
 import { Button } from "@/components/ui/button";
 import { ConvertBookingModal } from "@/components/leads/convert-booking-modal";
 import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type LeadRow = {
   id: string;
@@ -47,31 +55,32 @@ export function LeadsTable() {
 
   return (
     <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-      <table className="w-full text-sm">
-        <thead className="bg-muted/40">
-          <tr>
-            <th className="p-3 text-left">Name</th>
-            <th className="p-3 text-left">Phone</th>
-            <th className="p-3 text-left">Budget</th>
-            <th className="p-3 text-left">Status</th>
-            <th className="p-3 text-left">Assigned</th>
-            <th className="p-4 text-right">Actions</th>
-          </tr>
-        </thead>
+      <Table className="text-sm">
+        <TableHeader className="bg-muted/40">
+          <TableRow>
+            <TableHead className="p-3 text-left font-semibold">Name</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Phone</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Budget</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Status</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Assigned</TableHead>
+            <TableHead className="p-4 text-right font-semibold">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
 
-        <tbody>
+        <TableBody>
           {(data as LeadRow[]).map((lead) => (
-            <tr key={lead.id} className="border-t hover:bg-muted/20">
-              <td className="p-3 font-medium">{lead.name}</td>
-              <td className="p-3">{lead.phone || "-"}</td>
-              <td className="p-3">
+            <TableRow key={lead.id} className="border-t hover:bg-muted/20">
+              <TableCell className="p-3 font-medium">{lead.name}</TableCell>
+              <TableCell className="p-3">{lead.phone || "-"}</TableCell>
+              <TableCell className="p-3">
                 ₹{lead.budget?.toLocaleString() ?? "-"}
-              </td>
-              <td className="p-3">
+              </TableCell>
+              <TableCell className="p-3">
                 <LeadStatusBadge status={lead.status} />
-              </td>
-              <td className="p-3">{lead.assignedTo?.name ?? "-"}</td>
-              <td className="p-3 text-right flex justify-end gap-2">
+              </TableCell>
+              <TableCell className="p-3">{lead.assignedTo?.name ?? "-"}</TableCell>
+              <TableCell className="p-3 text-right">
+                <div className="flex justify-end gap-2">
                 <Button
                   asChild
                   variant="outline"
@@ -89,11 +98,12 @@ export function LeadsTable() {
                   </Button>
                 )}
                 <LeadActions lead={{ id: lead.id, status: lead.status }} />
-              </td>
-            </tr>
+                </div>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
 
       <ConvertBookingModal
         open={!!selectedLead}
