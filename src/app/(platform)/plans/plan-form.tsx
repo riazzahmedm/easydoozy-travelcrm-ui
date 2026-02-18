@@ -15,7 +15,7 @@ import { Plan } from "@/types/api";
 
 type PlanFormValues = {
   name: string;
-  code?: string;
+  code: string;
   isActive: boolean;
   limits: {
     maxAgents: number;
@@ -27,7 +27,7 @@ type PlanFormValues = {
 
 const planSchema = z.object({
   name: z.string().min(2, "Plan name is required"),
-  code: z.string().min(2, "Plan code is required").optional(),
+  code: z.string().min(2, "Plan code is required"),
   isActive: z.boolean(),
   limits: z.object({
     maxAgents: z.number().min(0, "Must be 0 or more"),
@@ -66,10 +66,10 @@ export function PlanForm({
     mutationFn: (values: PlanFormValues) =>
       initialData
         ? updatePlan(initialData.id, {
-          name: values.name,
-          limits: values.limits,
-          isActive: values.isActive,
-        })
+            name: values.name,
+            limits: values.limits,
+            isActive: values.isActive,
+          })
         : createPlan(values),
   });
 
@@ -162,7 +162,7 @@ export function PlanForm({
             className="h-11 rounded-lg uppercase tracking-wide"
             {...form.register("code", { required: true })}
             placeholder="STARTER"
-            disabled={initialData}
+            disabled={!!initialData}
           />
           <p className="text-xs text-muted-foreground">
             Unique identifier (cannot be changed later)

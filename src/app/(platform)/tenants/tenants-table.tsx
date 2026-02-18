@@ -5,6 +5,14 @@ import { getTenants } from "@/lib/tenants-api";
 import { TenantStatusBadge } from "./tenant-status-badge";
 import { TenantActions } from "./tenant-actions";
 import { TenantDetails } from "@/types/api";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export function TenantsTable() {
   const { data, isLoading } = useQuery({
@@ -29,26 +37,26 @@ export function TenantsTable() {
   }
 
   return (
-    <div className="bg-white rounded border overflow-hidden">
-      <table className="w-full text-sm">
-        <thead>
-          <tr>
-            <th className="p-3 text-left">Tenant</th>
-            <th className="p-3 text-left">Plan</th>
-            <th className="p-3 text-left">Users</th>
-            <th className="p-3 text-left">Destinations</th>
-            <th className="p-3 text-left">Packages</th>
-            <th className="p-3 text-left">Status</th>
-            <th className="p-4 text-right">Actions</th>
-          </tr>
-        </thead>
+    <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+      <Table className="text-sm">
+        <TableHeader className="bg-muted/40">
+          <TableRow>
+            <TableHead className="p-3 text-left font-semibold">Tenant</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Plan</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Users</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Destinations</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Packages</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Status</TableHead>
+            <TableHead className="p-4 text-right font-semibold">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
 
-        <tbody>
+        <TableBody>
           {data.map((tenant: TenantDetails) => {
             const isPlatform = tenant.slug === "platform";
 
             return (
-              <tr
+              <TableRow
                 key={tenant.id}
                 className={`
           border-t transition-colors
@@ -56,7 +64,7 @@ export function TenantsTable() {
         `}
               >
                 {/* Tenant */}
-                <td className="p-3 font-medium">
+                <TableCell className="p-3 font-medium">
                   {tenant.name}
                   <div className="text-xs text-muted-foreground flex items-center gap-2">
                     {tenant.slug}
@@ -66,10 +74,10 @@ export function TenantsTable() {
                       </span>
                     )}
                   </div>
-                </td>
+                </TableCell>
 
                 {/* Plan */}
-                <td className="p-3">
+                <TableCell className="p-3">
                   {!isPlatform && (tenant.subscription?.plan ? (
                     <div className="flex flex-col">
                       <span className="font-medium">
@@ -84,28 +92,27 @@ export function TenantsTable() {
                       No Plan
                     </span>
                   ))}
-                </td>
+                </TableCell>
 
-                <td className="p-3">{tenant._count.users}</td>
-                <td className="p-3">{tenant._count.destinations}</td>
-                <td className="p-3">{tenant._count.packages}</td>
+                <TableCell className="p-3">{tenant._count.users}</TableCell>
+                <TableCell className="p-3">{tenant._count.destinations}</TableCell>
+                <TableCell className="p-3">{tenant._count.packages}</TableCell>
 
-                <td className="p-3">
+                <TableCell className="p-3">
                   <TenantStatusBadge status={tenant.status} />
-                </td>
+                </TableCell>
 
                 {/* Actions */}
-                <td className="p-3 text-right">
+                <TableCell className="p-3 text-right">
                   {!isPlatform && (
                     <TenantActions tenant={tenant} />
                   )}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             );
           })}
-        </tbody>
-
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

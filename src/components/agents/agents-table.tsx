@@ -6,6 +6,14 @@ import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "../ui/badge";
 import { formatApiError } from "@/lib/utils";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type AgentItem = {
   id: string;
@@ -55,23 +63,23 @@ export function AgentsTable() {
   }
 
   return (
-    <div className="bg-white border rounded-xl overflow-hidden">
-      <table className="w-full text-sm">
-        <thead>
-          <tr>
-            <th className="p-3 text-left">Name</th>
-            <th className="p-3 text-left">Email</th>
-            <th className="p-3 text-left">Status</th>
-            <th className="p-4 text-right">Action</th>
-          </tr>
-        </thead>
+    <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+      <Table className="text-sm">
+        <TableHeader className="bg-muted/40">
+          <TableRow>
+            <TableHead className="p-3 text-left font-semibold">Name</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Email</TableHead>
+            <TableHead className="p-3 text-left font-semibold">Status</TableHead>
+            <TableHead className="p-4 text-right font-semibold">Action</TableHead>
+          </TableRow>
+        </TableHeader>
 
-        <tbody>
+        <TableBody>
           {data?.map((agent: AgentItem) => (
-            <tr key={agent.id} className="border-t">
-              <td className="p-3">{agent.name}</td>
-              <td className="p-3">{agent.email}</td>
-              <td className="p-3">
+            <TableRow key={agent.id} className="border-t">
+              <TableCell className="p-3">{agent.name}</TableCell>
+              <TableCell className="p-3">{agent.email}</TableCell>
+              <TableCell className="p-3">
                 <Badge
                   className={
                     agent.isActive
@@ -81,8 +89,8 @@ export function AgentsTable() {
                 >
                   {agent.isActive ? "Active" : "Inactive"}
                 </Badge>
-              </td>
-              <td className="p-3 text-right">
+              </TableCell>
+              <TableCell className="p-3 text-right">
                 <Button
                   size="sm"
                   variant="outline"
@@ -97,11 +105,11 @@ export function AgentsTable() {
                     ? "Deactivate"
                     : "Activate"}
                 </Button>
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

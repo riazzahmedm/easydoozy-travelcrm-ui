@@ -1,14 +1,28 @@
 import { Card } from "@/components/ui/card";
 
-export function DashboardOverview({ data }: any) {
+type OverviewData = {
+  totalTenants: number;
+  activeTenants: number;
+  suspendedTenants: number;
+  totalAgents: number;
+  totalDestinations: number;
+  totalPackages: number;
+  publishedPackages: number;
+  totalLeads: number;
+  totalBookings: number;
+};
+
+export function DashboardOverview({ data }: { data: OverviewData }) {
   const items = [
     { label: "Total Tenants", value: data.totalTenants },
     { label: "Active Tenants", value: data.activeTenants },
     { label: "Suspended Tenants", value: data.suspendedTenants },
     { label: "Agents", value: data.totalAgents },
+    { label: "Leads", value: data.totalLeads },
+    { label: "Bookings", value: data.totalBookings },
     { label: "Destinations", value: data.totalDestinations },
     { label: "Packages", value: data.totalPackages },
-    { label: "Published Packages", value: data.publishedPackages },
+    // { label: "Published Packages", value: data.publishedPackages },
   ];
 
   return (
