@@ -3,7 +3,7 @@
 import { cookies, headers } from "next/headers";
 
 const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+  process.env.NEXT_PUBLIC_API_URL ?? "/api/proxy";
 
 async function getAuthCookieHeader() {
   const headerStore = await headers();
