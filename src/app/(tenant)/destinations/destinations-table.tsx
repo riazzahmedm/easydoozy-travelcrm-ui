@@ -73,7 +73,7 @@ export function DestinationsTable() {
 
   if (isLoading) {
     return (
-      <div className="bg-white border rounded p-6">
+      <div className="bg-white rounded-2xl border p-6 shadow-sm">
         Loading destinations...
       </div>
     );
@@ -81,7 +81,7 @@ export function DestinationsTable() {
 
   if (!data?.length) {
     return (
-      <div className="bg-white border rounded p-6 text-sm text-muted-foreground">
+      <div className="bg-white rounded-2xl border p-6 shadow-sm text-muted-foreground">
         No destinations created yet.
       </div>
     );

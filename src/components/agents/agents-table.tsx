@@ -59,7 +59,19 @@ export function AgentsTable() {
   });
 
   if (isLoading) {
-    return <div>Loading agents...</div>;
+    return (
+      <div className="bg-white rounded-2xl border p-6 shadow-sm">
+        Loading agents...
+      </div>
+    );
+  }
+
+  if (!data?.length) {
+    return (
+      <div className="bg-white rounded-2xl border p-6 shadow-sm text-muted-foreground">
+        No agents created yet.
+      </div>
+    );
   }
 
   return (
