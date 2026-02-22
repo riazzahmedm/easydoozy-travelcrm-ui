@@ -55,7 +55,21 @@ export function PackagesTable() {
     },
   });
 
-  if (isLoading) return <div>Loading packages...</div>;
+   if (isLoading) {
+    return (
+      <div className="bg-white rounded-2xl border p-6 shadow-sm">
+        Loading packages...
+      </div>
+    );
+  }
+
+  if (!data?.length) {
+    return (
+      <div className="bg-white rounded-2xl border p-6 shadow-sm text-muted-foreground">
+        No packages created yet.
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">

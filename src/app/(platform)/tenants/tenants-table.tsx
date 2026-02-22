@@ -20,9 +20,9 @@ export function TenantsTable() {
     queryFn: getTenants,
   });
 
-  if (isLoading) {
+   if (isLoading) {
     return (
-      <div className="bg-white rounded border p-6">
+      <div className="bg-white rounded-2xl border p-6 shadow-sm">
         Loading tenants...
       </div>
     );
@@ -30,7 +30,7 @@ export function TenantsTable() {
 
   if (!data?.length) {
     return (
-      <div className="bg-white rounded border p-6 text-sm text-muted-foreground">
+      <div className="bg-white rounded-2xl border p-6 shadow-sm text-muted-foreground">
         No tenants created yet.
       </div>
     );
