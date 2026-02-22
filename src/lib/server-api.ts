@@ -16,10 +16,27 @@ async function getAuthCookieHeader() {
   return `access_token=${accessToken}`;
 }
 
+async function resolveApiBaseUrl() {
+  if (apiBaseUrl.startsWith("http")) {
+    return apiBaseUrl;
+  }
+
+  const headerStore = await headers();
+  const host = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
+  const protocol = headerStore.get("x-forwarded-proto") ?? "http";
+
+  if (!host) {
+    throw new Error("Unable to resolve request host for server fetch");
+  }
+
+  return `${protocol}://${host}${apiBaseUrl}`;
+}
+
 export async function serverFetch(
   path: string,
   init: RequestInit = {}
 ) {
+  const baseUrl = await resolveApiBaseUrl();
   const cookieHeader = await getAuthCookieHeader();
   const headers = new Headers(init.headers);
 
@@ -27,7 +44,7 @@ export async function serverFetch(
     headers.set("cookie", cookieHeader);
   }
 
-  return fetch(`${apiBaseUrl}${path}`, {
+  return fetch(`${baseUrl}${path}`, {
     ...init,
     headers,
     cache: "no-store",
